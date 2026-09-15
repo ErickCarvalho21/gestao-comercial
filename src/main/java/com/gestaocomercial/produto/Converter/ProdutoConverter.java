@@ -1,9 +1,15 @@
 package com.gestaocomercial.produto.Converter;
 
+import com.gestaocomercial.exception.dto.ErrorDTOResponse;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.entity.Produto;
+import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
+
+@Component
 public class ProdutoConverter {
 
     public Produto paraProduto(ProdutoDTORequest produtodto){
@@ -18,7 +24,7 @@ public class ProdutoConverter {
                 .estoqueMinimo(produtodto.getEstoqueMinimo())
                 .build();
     }
-
+    
     public ProdutoDTOResponse paraProdutoDTOResponse(Produto produto){
         return ProdutoDTOResponse.builder()
                 .nome(produto.getNome())
@@ -34,7 +40,6 @@ public class ProdutoConverter {
                 .ativo(produto.isAtivo())
                 .build();
     }
-
 
 
 
