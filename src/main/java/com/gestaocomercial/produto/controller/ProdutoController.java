@@ -33,8 +33,21 @@ public class ProdutoController {
         return ResponseEntity.ok(
                 produtoService.buscarProdutoPorNome(nome)
         );
+    }
 
+    @GetMapping("/codigo-barras/{codigoBarras}")
+    public ResponseEntity<ProdutoDTOResponse> listarProdutoCodigoBarras(
+            @PathVariable String codigoBarras){
+        return ResponseEntity.ok(
+                produtoService.buscarProdutoCodigoBarra(codigoBarras)
+        );
+    }
 
+    @GetMapping("{id}")
+    public ResponseEntity<ProdutoDTOResponse> listarProdutoId(
+            @PathVariable long id){
+        return ResponseEntity.ok(
+                produtoService.buscarProdutoId(id));
     }
 
 
