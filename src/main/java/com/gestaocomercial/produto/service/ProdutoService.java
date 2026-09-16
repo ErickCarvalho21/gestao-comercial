@@ -33,32 +33,36 @@ public class ProdutoService {
         return produtoConverter.paraProdutoDTOResponse(salvarProduto);
     }
 
-    public List<ProdutoDTOResponse> buscarProdutoPorNome(String nome){
-        List<Produto> produtosEncontradosNome =
-                produtoRepository.findByNomeContainingIgnoreCase(nome);
+    public List<ProdutoDTOResponse> listarProdutos(String nome){
+        List<Produto> produtosEncontrados;
 
-        return produtosEncontradosNome.stream()
+        if(nome == null|| nome.isBlank()){
+            produtosEncontrados = produtoRepository.findAll();
+        } else{
+            produtosEncontrados = produtoRepository.findByNomeContainingIgnoreCase(nome);
+        }
+        return produtosEncontrados.stream()
                 .map(produto -> produtoConverter.paraProdutoDTOResponse(produto))
                 .toList();
     }
 
     public ProdutoDTOResponse buscarProdutoCodigoBarra(String codigoBarras){
-           Produto produtoEncontrados =
+           Produto produtoEncontrado =
                 produtoRepository.findByCodigoBarras(codigoBarras)
                         .orElseThrow(()->new ProdutoNaoEncontradoException(
                                 " Produto nao encontrado: " + codigoBarras
                         ));
 
-           return produtoConverter.paraProdutoDTOResponse(produtoEncontrados);
+           return produtoConverter.paraProdutoDTOResponse(produtoEncontrado);
     }
 
     public ProdutoDTOResponse buscarProdutoId(Long id){
-        Produto produtoEncontrados =
+        Produto produtoEncontrado =
                 produtoRepository.findById(id).orElseThrow(()-> new ProdutoNaoEncontradoException(
                         "Produto não Encontrado: " + id
                 ));
 
-        return produtoConverter.paraProdutoDTOResponse(produtoEncontrados);
+        return produtoConverter.paraProdutoDTOResponse(produtoEncontrado);
     }
 
 }

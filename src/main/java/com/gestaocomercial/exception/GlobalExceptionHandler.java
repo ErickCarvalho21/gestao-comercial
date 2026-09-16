@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(ProdutoNaoEncontradoException.class)
-    public ResponseEntity<ErrorDTOResponse> handlerConflictException(ProdutoNaoEncontradoException ex,
+    public ResponseEntity<ErrorDTOResponse> handlerNotFoundException(ProdutoNaoEncontradoException ex,
                                                                      HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildError(
                 HttpStatus.NOT_FOUND,
