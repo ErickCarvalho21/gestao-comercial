@@ -8,7 +8,7 @@ import com.gestaocomercial.produto.entity.Produto;
 import com.gestaocomercial.produto.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +25,19 @@ public class ProdutoService {
             );
         }
         Produto produto = produtoConverter.paraProduto(produtoDTORequest);
-
         //return produtoConverter.paraProdutoDTOResponse(
         // produtoRepository.save(produto));
-
         Produto salvarProduto = produtoRepository.save(produto);
         return produtoConverter.paraProdutoDTOResponse(salvarProduto);
+    }
 
+    public List<ProdutoDTOResponse> buscarProdutoPorNome(String nome){
+        List<Produto> produtosEncontrados =
+                produtoRepository.findByNomeContainingIgnoreCase(nome);
+
+        return produtosEncontrados.stream()
+                .map(produto -> produtoConverter.paraProdutoDTOResponse(produto))
+                .toList();
     }
 
 }

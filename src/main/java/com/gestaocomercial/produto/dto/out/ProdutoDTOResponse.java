@@ -1,9 +1,7 @@
 package com.gestaocomercial.produto.dto.out;
 
-
 import com.gestaocomercial.produto.enums.TipoVendaEnums;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

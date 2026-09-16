@@ -1,6 +1,5 @@
 package com.gestaocomercial.produto.dto.in;
 
-
 import com.gestaocomercial.produto.enums.TipoVendaEnums;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,14 +16,11 @@ import java.math.BigDecimal;
 @Builder
 public class ProdutoDTORequest {
 
-
     @NotBlank
     private String nome;
     @NotBlank
     private String codigoBarras;
-
     private String descricao;
-
     @NotNull
     private TipoVendaEnums tipoVendaEnums;
     @NotNull
