@@ -3,10 +3,8 @@ package com.gestaocomercial.produto.entity;
 import com.gestaocomercial.produto.enums.TipoVendaEnums;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 
 @Getter
 @Setter
@@ -15,8 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 public class Produto {
-
-
     @Id
     @GeneratedValue(strategy =GenerationType.IDENTITY)
     private Long id;
