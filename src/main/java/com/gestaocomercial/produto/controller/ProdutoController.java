@@ -22,32 +22,26 @@ public class ProdutoController {
     public ResponseEntity<ProdutoDTOResponse> salvaProduto(
             @RequestBody @Valid ProdutoDTORequest produtoDTORequest ){
         return ResponseEntity.status(
-                HttpStatus.CREATED).body(produtoService.cadastrarProduto(produtoDTORequest)
-        );
+                HttpStatus.CREATED).body(produtoService.cadastrarProduto(produtoDTORequest
+        ));
     }
-
 
     @GetMapping
     public ResponseEntity<List<ProdutoDTOResponse>> listarProduto(
-            @RequestParam String nome){
-        return ResponseEntity.ok(
-                produtoService.buscarProdutoPorNome(nome)
-        );
+            @RequestParam(required = false) String nome){
+        return ResponseEntity.ok(produtoService.listarProdutos(nome));
     }
 
     @GetMapping("/codigo-barras/{codigoBarras}")
     public ResponseEntity<ProdutoDTOResponse> listarProdutoCodigoBarras(
             @PathVariable String codigoBarras){
-        return ResponseEntity.ok(
-                produtoService.buscarProdutoCodigoBarra(codigoBarras)
-        );
+        return ResponseEntity.ok(produtoService.buscarProdutoCodigoBarra(codigoBarras));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProdutoDTOResponse> listarProdutoId(
             @PathVariable long id){
-        return ResponseEntity.ok(
-                produtoService.buscarProdutoId(id));
+        return ResponseEntity.ok(produtoService.buscarProdutoId(id));
     }
 
 
