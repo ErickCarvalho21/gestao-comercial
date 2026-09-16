@@ -15,18 +15,28 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CodigoBarrasDuplicationException.class)
     public ResponseEntity<ErrorDTOResponse> handlerConflictException(CodigoBarrasDuplicationException ex,
-                                                                       HttpServletRequest request){
+                                                                     HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(buildError(
                         HttpStatus.CONFLICT,
                         ex.getMessage(),
-                        request.getRequestURI(),
-                        "Conflict"
+                        request.getRequestURI()
                 ));
     }
 
+
+    @ExceptionHandler(ProdutoNaoEncontradoException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerConflictException(ProdutoNaoEncontradoException ex,
+                                                                     HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildError(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                request.getRequestURI()
+        ));
+    }
+
     private ErrorDTOResponse buildError (
-            HttpStatus status, String mensagem, String path, String message){
+            HttpStatus status, String mensagem, String path){
         return ErrorDTOResponse.builder()
                 .error(status.getReasonPhrase())
                 .message(mensagem)
