@@ -46,12 +46,19 @@ public class ProdutoService {
            Produto produtoEncontrados =
                 produtoRepository.findByCodigoBarras(codigoBarras)
                         .orElseThrow(()->new ProdutoNaoEncontradoException(
-                                " Produto nao encontrado " + codigoBarras));
+                                " Produto nao encontrado: " + codigoBarras
+                        ));
 
            return produtoConverter.paraProdutoDTOResponse(produtoEncontrados);
+    }
 
+    public ProdutoDTOResponse buscarProdutoId(Long id){
+        Produto produtoEncontrados =
+                produtoRepository.findById(id).orElseThrow(()-> new ProdutoNaoEncontradoException(
+                        "Produto não Encontrado: " + id
+                ));
 
-
+        return produtoConverter.paraProdutoDTOResponse(produtoEncontrados);
     }
 
 }
