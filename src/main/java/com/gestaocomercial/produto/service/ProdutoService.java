@@ -9,6 +9,8 @@ import com.gestaocomercial.produto.entity.Produto;
 import com.gestaocomercial.produto.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 
@@ -55,14 +57,43 @@ public class ProdutoService {
 
            return produtoConverter.paraProdutoDTOResponse(produtoEncontrado);
     }
+    public Produto verificarProdutoExistenteId(Long id) {
+        return produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontradoException(
+                "Produto nao encontrado: " + id
+        ));
+    }
+    private void validarCodigoBarrasDuplicado(String codigoBarras, long id){
+        boolean codigoDuplicado =
+                produtoRepository.existsByCodigoBarrasAndIdNot(codigoBarras, id);
 
-    public ProdutoDTOResponse buscarProdutoId(Long id){
-        Produto produtoEncontrado =
-                produtoRepository.findById(id).orElseThrow(()-> new ProdutoNaoEncontradoException(
+        if(codigoDuplicado){
+            throw new CodigoBarrasDuplicationException(
+                    "Este codigo de brras ja existe"
+            );
+        }
+    }
+
+    public ProdutoDTOResponse buscarProdutoPorId(Long id){
+        Produto produto = buscarProdutoEntidadePorId(id);
+        return produtoConverter.paraProdutoDTOResponse(produto);
+    }
+
+    private Produto buscarProdutoEntidadePorId(Long id){
+        return produtoRepository.findById(id).orElseThrow(()-> new ProdutoNaoEncontradoException(
                         "Produto não Encontrado: " + id
                 ));
+    }
 
-        return produtoConverter.paraProdutoDTOResponse(produtoEncontrado);
+    @Transactional
+    public ProdutoDTOResponse atualizarProduto(long id, ProdutoDTORequest produtoDTORequest){
+
+        Produto produto = buscarProdutoEntidadePorId(id);
+        if(!produtoDTORequest.getCodigoBarras().equals(produto.getCodigoBarras())){
+            validarCodigoBarrasDuplicado(produtoDTORequest.getCodigoBarras(), id);
+        }
+        Produto produtoAtualizado = produtoConverter.updateProduto(produtoDTORequest, produto);
+        return produtoConverter.paraProdutoDTOResponse(produtoRepository.save(produtoAtualizado));
+
     }
 
 }
