@@ -33,7 +33,26 @@ public class ProdutoConverter {
                 .estoqueMinimo(produto.getEstoqueMinimo())
                 .id(produto.getId())
                 .dataCadastro(produto.getDataCadastro())
-                .ativo(produto.isAtivo())
+                .isAtivo(produto.isAtivo())
                 .build();
     }
+
+    public Produto updateProduto (ProdutoDTORequest produtoDTORequest, Produto entity){
+        return Produto.builder()
+                .nome(produtoDTORequest.getNome())
+                .descricao(produtoDTORequest.getDescricao())
+                .codigoBarras(produtoDTORequest.getCodigoBarras())
+                .precoVenda(produtoDTORequest.getPrecoVenda())
+                .tipoVendaEnums(produtoDTORequest.getTipoVendaEnums())
+                .quantidadeEstoque(produtoDTORequest.getQuantidadeEstoque())
+                .precoCompra(produtoDTORequest.getPrecoCompra())
+                .estoqueMinimo(produtoDTORequest.getEstoqueMinimo())
+                .ativo(entity.isAtivo())
+                .id(entity.getId())
+                .dataCadastro(entity.getDataCadastro())
+                .build();
+    }
+
+
+
 }

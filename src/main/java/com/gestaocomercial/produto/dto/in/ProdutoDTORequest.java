@@ -35,4 +35,5 @@ public class ProdutoDTORequest {
     @NotNull
     @PositiveOrZero
     private BigDecimal estoqueMinimo;
+
 }

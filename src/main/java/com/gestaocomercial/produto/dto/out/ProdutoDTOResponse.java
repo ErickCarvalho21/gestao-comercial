@@ -21,7 +21,7 @@ public class ProdutoDTOResponse {
     private BigDecimal precoVenda;
     private BigDecimal quantidadeEstoque;
     private BigDecimal estoqueMinimo;
-    private boolean ativo;
+    private boolean isAtivo;
     private LocalDateTime dataCadastro;
 
 
