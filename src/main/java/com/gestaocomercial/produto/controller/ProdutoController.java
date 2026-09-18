@@ -49,5 +49,21 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.atualizarProduto(id, dto));
     }
 
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativarProduto(
+        @PathVariable Long id){
+        produtoService.ativarProduto(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/desativar")
+    public ResponseEntity<Void> desativarProduto(
+            @PathVariable Long id){
+        produtoService.desativarProduto(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 
 }

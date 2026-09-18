@@ -96,4 +96,15 @@ public class ProdutoService {
 
     }
 
+    @Transactional
+    public void desativarProduto(Long id){
+        Produto produto = buscarProdutoEntidadePorId(id);
+        produto.setAtivo(false);
+    }
+    @Transactional
+    public void ativarProduto(Long id){
+        Produto produto = buscarProdutoEntidadePorId(id);
+        produto.setAtivo(true);
+    }
+
 }
