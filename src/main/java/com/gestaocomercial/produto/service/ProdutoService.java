@@ -91,8 +91,8 @@ public class ProdutoService {
         if(!produtoDTORequest.getCodigoBarras().equals(produto.getCodigoBarras())){
             validarCodigoBarrasDuplicado(produtoDTORequest.getCodigoBarras(), id);
         }
-        Produto produtoAtualizado = produtoConverter.updateProduto(produtoDTORequest, produto);
-        return produtoConverter.paraProdutoDTOResponse(produtoRepository.save(produtoAtualizado));
+        produtoConverter.updateProduto(produtoDTORequest, produto);
+        return produtoConverter.paraProdutoDTOResponse(produtoRepository.save(produto));
 
     }
 
