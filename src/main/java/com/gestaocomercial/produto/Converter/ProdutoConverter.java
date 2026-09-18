@@ -38,19 +38,15 @@ public class ProdutoConverter {
     }
 
     public Produto updateProduto (ProdutoDTORequest produtoDTORequest, Produto entity){
-        return Produto.builder()
-                .nome(produtoDTORequest.getNome())
-                .descricao(produtoDTORequest.getDescricao())
-                .codigoBarras(produtoDTORequest.getCodigoBarras())
-                .precoVenda(produtoDTORequest.getPrecoVenda())
-                .tipoVendaEnums(produtoDTORequest.getTipoVendaEnums())
-                .quantidadeEstoque(produtoDTORequest.getQuantidadeEstoque())
-                .precoCompra(produtoDTORequest.getPrecoCompra())
-                .estoqueMinimo(produtoDTORequest.getEstoqueMinimo())
-                .ativo(entity.isAtivo())
-                .id(entity.getId())
-                .dataCadastro(entity.getDataCadastro())
-                .build();
+                entity.setNome(produtoDTORequest.getNome());
+                entity.setDescricao(produtoDTORequest.getDescricao());
+                entity.setCodigoBarras(produtoDTORequest.getCodigoBarras());
+                entity.setPrecoVenda(produtoDTORequest.getPrecoVenda());
+                entity.setTipoVendaEnums(produtoDTORequest.getTipoVendaEnums());
+                entity.setQuantidadeEstoque(produtoDTORequest.getQuantidadeEstoque());
+                entity.setPrecoCompra(produtoDTORequest.getPrecoCompra());
+                entity.setEstoqueMinimo(produtoDTORequest.getEstoqueMinimo());
+                return entity;
     }
 
 
