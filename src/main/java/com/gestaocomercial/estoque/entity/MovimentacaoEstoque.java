@@ -23,6 +23,7 @@ public class MovimentacaoEstoque {
     @JoinColumn(name = "produto_id", nullable = false)
     private Produto produto;
     @Enumerated(EnumType.STRING)
+    @Column
     private TipoMovimentacaoEnums tipoMoviementacaoEnums;
     @Column(nullable = false)
     private BigDecimal quantidade;
