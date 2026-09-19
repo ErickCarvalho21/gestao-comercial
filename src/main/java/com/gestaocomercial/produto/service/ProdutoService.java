@@ -62,7 +62,7 @@ public class ProdutoService {
                 "Produto nao encontrado: " + id
         ));
     }
-    private void validarCodigoBarrasDuplicado(String codigoBarras, long id){
+    public void validarCodigoBarrasDuplicado(String codigoBarras, long id){
         boolean codigoDuplicado =
                 produtoRepository.existsByCodigoBarrasAndIdNot(codigoBarras, id);
 
@@ -78,7 +78,7 @@ public class ProdutoService {
         return produtoConverter.paraProdutoDTOResponse(produto);
     }
 
-    private Produto buscarProdutoEntidadePorId(Long id){
+    public Produto buscarProdutoEntidadePorId(Long id){
         return produtoRepository.findById(id).orElseThrow(()-> new ProdutoNaoEncontradoException(
                         "Produto não Encontrado: " + id
                 ));
