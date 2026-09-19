@@ -78,7 +78,7 @@ public class EstoqueService {
 
         MovimentacaoEstoque movimentacaoSalva = movimentacaoRepository.save(movimentacaoEstoque);
 
-        return estoqueConverter.paraEstoqueResponseDTO(movimentacaoEstoque);
+        return estoqueConverter.paraEstoqueResponseDTO(movimentacaoSalva);
 
 
     }

@@ -35,6 +35,17 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(EstoqueInsuficienteException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerNotFoundException(
+            EstoqueInsuficienteException ex, HttpServletRequest request){
+        return
+                ResponseEntity.status(HttpStatus.CONFLICT).body(buildError(
+        HttpStatus.CONFLICT,
+        ex.getMessage(),
+        request.getRequestURI()
+        ));
+    }
+
     private ErrorDTOResponse buildError (
             HttpStatus status, String mensagem, String path){
         return ErrorDTOResponse.builder()
