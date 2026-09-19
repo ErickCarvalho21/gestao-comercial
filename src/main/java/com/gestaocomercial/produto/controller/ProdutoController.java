@@ -62,6 +62,11 @@ public class ProdutoController {
         produtoService.desativarProduto(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/estoque-baixo")
+    public ResponseEntity<List<ProdutoDTOResponse>> listarProdutosEstoqueBaixo(){
+        return ResponseEntity.ok(produtoService.listarProdutoEstoqueBaixo());
+
+    }
 
 
 

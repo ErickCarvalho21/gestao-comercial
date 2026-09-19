@@ -107,4 +107,14 @@ public class ProdutoService {
         produto.setAtivo(true);
     }
 
+
+    public List<ProdutoDTOResponse> listarProdutoEstoqueBaixo(){
+        List<Produto> produtoEstoqueBaixo = produtoRepository.buscarProdutoEstoqueBaixo();
+
+        return produtoEstoqueBaixo.stream()
+                .map(produto -> produtoConverter.paraProdutoDTOResponse(produto))
+                .toList();
+
+    }
+
 }
