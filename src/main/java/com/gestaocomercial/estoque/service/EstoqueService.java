@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @Service
@@ -66,7 +67,6 @@ public class EstoqueService {
     @Transactional
     public MovimentacaoEstoqueDTOResponse registrarMovimentacao(MovimentacaoEstoqueDTORequest
                                                                        request){
-
         Produto produto = produtoService.buscarProdutoEntidadePorId(request.getProdutoId());
 
         BigDecimal novoEstoque = calcularNovoEstoque(produto, request);
@@ -80,7 +80,14 @@ public class EstoqueService {
 
         return estoqueConverter.paraEstoqueResponseDTO(movimentacaoSalva);
 
+    }
 
+    public List<MovimentacaoEstoqueDTOResponse> listarMovimentacoes(){
+        List<MovimentacaoEstoque> movimetacoes = movimentacaoRepository.findAllByOrderByDataDescIdDesc();
+        return movimetacoes.stream()
+                .map(movimentacaoEstoque->
+                        estoqueConverter.paraEstoqueResponseDTO(movimentacaoEstoque))
+                .toList();
     }
 
 

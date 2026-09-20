@@ -1,5 +1,9 @@
 package com.gestaocomercial.produto.service;
 
+import com.gestaocomercial.estoque.converter.EstoqueConverter;
+import com.gestaocomercial.estoque.dto.out.MovimentacaoEstoqueDTOResponse;
+import com.gestaocomercial.estoque.entity.MovimentacaoEstoque;
+import com.gestaocomercial.estoque.repository.MovimentacaoRepository;
 import com.gestaocomercial.exception.CodigoBarrasDuplicationException;
 import com.gestaocomercial.exception.ProdutoNaoEncontradoException;
 import com.gestaocomercial.produto.Converter.ProdutoConverter;
@@ -20,6 +24,7 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
     private final ProdutoConverter produtoConverter;
+
 
     public ProdutoDTOResponse cadastrarProduto(ProdutoDTORequest produtoDTORequest){
 
@@ -116,5 +121,7 @@ public class ProdutoService {
                 .toList();
 
     }
+
+
 
 }
