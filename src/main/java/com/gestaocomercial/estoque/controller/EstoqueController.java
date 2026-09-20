@@ -35,7 +35,7 @@ public class EstoqueController {
 
     @GetMapping("/{produtoId}")
     public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarMovimentacoesID(@PathVariable Long produtoId){
-        return ResponseEntity.ok(estoqueService.listarMovimentacaoPorId(produtoId));
+        return ResponseEntity.ok(estoqueService.listarMovimentacaoPorProduto(produtoId));
 
     }
 

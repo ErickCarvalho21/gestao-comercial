@@ -7,6 +7,7 @@ import com.gestaocomercial.estoque.repository.MovimentacaoRepository;
 import com.gestaocomercial.exception.CodigoBarrasDuplicationException;
 import com.gestaocomercial.exception.ProdutoNaoEncontradoException;
 import com.gestaocomercial.produto.Converter.ProdutoConverter;
+import com.gestaocomercial.produto.dto.in.ProdutoAtualizacaoDTORequest;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.entity.Produto;
@@ -73,7 +74,7 @@ public class ProdutoService {
 
         if(codigoDuplicado){
             throw new CodigoBarrasDuplicationException(
-                    "Este codigo de brras ja existe"
+                    "Este codigo de barras ja existe"
             );
         }
     }
@@ -90,7 +91,7 @@ public class ProdutoService {
     }
 
     @Transactional
-    public ProdutoDTOResponse atualizarProduto(long id, ProdutoDTORequest produtoDTORequest){
+    public ProdutoDTOResponse atualizarProduto(long id, ProdutoAtualizacaoDTORequest produtoDTORequest){
 
         Produto produto = buscarProdutoEntidadePorId(id);
         if(!produtoDTORequest.getCodigoBarras().equals(produto.getCodigoBarras())){

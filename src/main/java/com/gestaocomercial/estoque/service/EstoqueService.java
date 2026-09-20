@@ -35,8 +35,15 @@ public class EstoqueService {
         BigDecimal quantidade = movimentacaoEstoqueDTORequest.getQuantidade();
         TipoMovimentacaoEnums tipo = movimentacaoEstoqueDTORequest.getTipoMovimentacaoEnums();
 
+        if(quantidade.compareTo(BigDecimal.ZERO) < 0){
+            throw new
+                    EstoqueInsuficienteException(
+                    "Quantidade não pode ser negativa"
+            );
+        }
+
         if(quantidade.compareTo(BigDecimal.ZERO) == 0 && tipo != TipoMovimentacaoEnums.AJUSTE){
-            throw new IllegalArgumentException(
+            throw new EstoqueInsuficienteException(
                     "Quantidade deve ser maior que zero para entrada ou saída"
             );
         }
@@ -89,7 +96,7 @@ public class EstoqueService {
                         estoqueConverter.paraEstoqueResponseDTO(movimentacaoEstoque))
                 .toList();
     }
-    public List<MovimentacaoEstoqueDTOResponse> listarMovimentacaoPorId(Long produtoId){
+    public List<MovimentacaoEstoqueDTOResponse> listarMovimentacaoPorProduto(Long produtoId){
 
         produtoService.buscarProdutoEntidadePorId(produtoId);
         List<MovimentacaoEstoque> movimentacoes = movimentacaoRepository.findByProdutoIdOrderByDataDescIdDesc(produtoId);
