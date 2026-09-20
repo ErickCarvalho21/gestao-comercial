@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpRequest;
 import java.util.List;
 
 @RestController
@@ -30,6 +31,12 @@ public class EstoqueController {
     @GetMapping("/movimentacao")
     public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarMovimentacoes(){
         return ResponseEntity.ok(estoqueService.listarMovimentacoes());
+    }
+
+    @GetMapping("/{produtoId}")
+    public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarMovimentacoesID(@PathVariable Long produtoId){
+        return ResponseEntity.ok(estoqueService.listarMovimentacaoPorProduto(produtoId));
+
     }
 
 }

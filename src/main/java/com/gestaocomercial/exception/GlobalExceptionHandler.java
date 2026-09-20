@@ -46,6 +46,16 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(EstoqueInsuficienteException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerBadRequestException(EstoqueInsuficienteException ex,
+                                                                       HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildError(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                request.getRequestURI()
+        ));
+    }
+
     private ErrorDTOResponse buildError (
             HttpStatus status, String mensagem, String path){
         return ErrorDTOResponse.builder()

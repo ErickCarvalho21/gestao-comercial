@@ -1,5 +1,6 @@
 package com.gestaocomercial.produto.Converter;
 
+import com.gestaocomercial.produto.dto.in.ProdutoAtualizacaoDTORequest;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.entity.Produto;
@@ -37,17 +38,17 @@ public class ProdutoConverter {
                 .build();
     }
 
-    public Produto updateProduto (ProdutoDTORequest produtoDTORequest, Produto entity){
-                entity.setNome(produtoDTORequest.getNome());
-                entity.setDescricao(produtoDTORequest.getDescricao());
-                entity.setCodigoBarras(produtoDTORequest.getCodigoBarras());
-                entity.setPrecoVenda(produtoDTORequest.getPrecoVenda());
-                entity.setTipoVendaEnums(produtoDTORequest.getTipoVendaEnums());
-                entity.setQuantidadeEstoque(produtoDTORequest.getQuantidadeEstoque());
-                entity.setPrecoCompra(produtoDTORequest.getPrecoCompra());
-                entity.setEstoqueMinimo(produtoDTORequest.getEstoqueMinimo());
+    public Produto updateProduto (ProdutoAtualizacaoDTORequest produtoAtualizacaoDTORequest, Produto entity){
+                entity.setNome(produtoAtualizacaoDTORequest.getNome());
+                entity.setDescricao(produtoAtualizacaoDTORequest.getDescricao());
+                entity.setCodigoBarras(produtoAtualizacaoDTORequest.getCodigoBarras());
+                entity.setPrecoVenda(produtoAtualizacaoDTORequest.getPrecoVenda());
+                entity.setTipoVendaEnums(produtoAtualizacaoDTORequest.getTipoVendaEnums());
+                entity.setPrecoCompra(produtoAtualizacaoDTORequest.getPrecoCompra());
+                entity.setEstoqueMinimo(produtoAtualizacaoDTORequest.getEstoqueMinimo());
                 return entity;
     }
+
 
 
 

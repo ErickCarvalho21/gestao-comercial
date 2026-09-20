@@ -1,5 +1,6 @@
 package com.gestaocomercial.produto.controller;
 
+import com.gestaocomercial.produto.dto.in.ProdutoAtualizacaoDTORequest;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.service.ProdutoService;
@@ -45,7 +46,7 @@ public class ProdutoController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<ProdutoDTOResponse> atualizarProduto(
-            @PathVariable long id, @RequestBody @Valid ProdutoDTORequest dto){
+            @PathVariable long id, @RequestBody @Valid ProdutoAtualizacaoDTORequest dto){
         return ResponseEntity.ok(produtoService.atualizarProduto(id, dto));
     }
 

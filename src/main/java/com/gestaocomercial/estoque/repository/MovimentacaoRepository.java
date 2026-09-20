@@ -9,5 +9,7 @@ public interface MovimentacaoRepository extends JpaRepository<MovimentacaoEstoqu
 
     List<MovimentacaoEstoque> findAllByOrderByDataDescIdDesc();
 
+    List<MovimentacaoEstoque> findByProdutoIdOrderByDataDescIdDesc(Long produtoId);
+
 
 }
