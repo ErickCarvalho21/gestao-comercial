@@ -8,6 +8,7 @@ import com.gestaocomercial.estoque.entity.MovimentacaoEstoque;
 import com.gestaocomercial.estoque.enums.TipoMovimentacaoEnums;
 import com.gestaocomercial.estoque.repository.MovimentacaoRepository;
 import com.gestaocomercial.exception.EstoqueInsuficienteException;
+import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.entity.Produto;
 import com.gestaocomercial.produto.service.ProdutoService;
 import lombok.*;
@@ -63,7 +64,6 @@ public class EstoqueService {
 
     }
 
-
     @Transactional
     public MovimentacaoEstoqueDTOResponse registrarMovimentacao(MovimentacaoEstoqueDTORequest
                                                                        request){
@@ -88,6 +88,16 @@ public class EstoqueService {
                 .map(movimentacaoEstoque->
                         estoqueConverter.paraEstoqueResponseDTO(movimentacaoEstoque))
                 .toList();
+    }
+    public List<MovimentacaoEstoqueDTOResponse> listarMovimentacaoPorId(Long produtoId){
+
+        produtoService.buscarProdutoEntidadePorId(produtoId);
+        List<MovimentacaoEstoque> movimentacoes = movimentacaoRepository.findByProdutoIdOrderByDataDescIdDesc(produtoId);
+
+        return movimentacoes.stream().map(movimentacaoEstoque->
+                estoqueConverter.paraEstoqueResponseDTO(movimentacaoEstoque))
+                .toList();
+
     }
 
 
