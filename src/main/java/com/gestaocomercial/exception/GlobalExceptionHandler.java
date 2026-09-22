@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EstoqueInsuficienteException.class)
-    public ResponseEntity<ErrorDTOResponse> handlerNotFoundException(
+    public ResponseEntity<ErrorDTOResponse> handlerConflictException(
             EstoqueInsuficienteException ex, HttpServletRequest request){
         return
                 ResponseEntity.status(HttpStatus.CONFLICT).body(buildError(
@@ -46,8 +46,9 @@ public class GlobalExceptionHandler {
         ));
     }
 
-    @ExceptionHandler(EstoqueInsuficienteException.class)
-    public ResponseEntity<ErrorDTOResponse> handlerBadRequestException(EstoqueInsuficienteException ex,
+    @ExceptionHandler(QuantidadeMovimentacaoInvalidaException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerBadRequestException(
+            QuantidadeMovimentacaoInvalidaException ex,
                                                                        HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildError(
                 HttpStatus.BAD_REQUEST,

@@ -8,6 +8,7 @@ import com.gestaocomercial.estoque.entity.MovimentacaoEstoque;
 import com.gestaocomercial.estoque.enums.TipoMovimentacaoEnums;
 import com.gestaocomercial.estoque.repository.MovimentacaoRepository;
 import com.gestaocomercial.exception.EstoqueInsuficienteException;
+import com.gestaocomercial.exception.QuantidadeMovimentacaoInvalidaException;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.entity.Produto;
 import com.gestaocomercial.produto.service.ProdutoService;
@@ -37,13 +38,14 @@ public class EstoqueService {
 
         if(quantidade.compareTo(BigDecimal.ZERO) < 0){
             throw new
-                    EstoqueInsuficienteException(
+                    QuantidadeMovimentacaoInvalidaException(
                     "Quantidade não pode ser negativa"
             );
         }
 
         if(quantidade.compareTo(BigDecimal.ZERO) == 0 && tipo != TipoMovimentacaoEnums.AJUSTE){
-            throw new EstoqueInsuficienteException(
+            throw new
+                    QuantidadeMovimentacaoInvalidaException(
                     "Quantidade deve ser maior que zero para entrada ou saída"
             );
         }
