@@ -5,6 +5,7 @@ import com.gestaocomercial.exception.dto.ErrorDTOResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -48,14 +49,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QuantidadeMovimentacaoInvalidaException.class)
     public ResponseEntity<ErrorDTOResponse> handlerBadRequestException(
-            QuantidadeMovimentacaoInvalidaException ex,
-                                                                       HttpServletRequest request){
+            QuantidadeMovimentacaoInvalidaException ex, HttpServletRequest request){
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildError(
                 HttpStatus.BAD_REQUEST,
                 ex.getMessage(),
                 request.getRequestURI()
         ));
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildError(
+                HttpStatus.BAD_REQUEST,
+                ex.getBindingResult().getFieldError().getDefaultMessage(),
+                request.getRequestURI()
+        ));
+    }
+
+
 
     private ErrorDTOResponse buildError (
             HttpStatus status, String mensagem, String path){
