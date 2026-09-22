@@ -31,9 +31,6 @@ public class ProdutoDTORequest {
     private BigDecimal precoVenda;
     @NotNull
     @PositiveOrZero
-    private BigDecimal quantidadeEstoque;
-    @NotNull
-    @PositiveOrZero
     private BigDecimal estoqueMinimo;
 
 }

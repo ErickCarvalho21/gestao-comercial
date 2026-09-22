@@ -6,6 +6,8 @@ import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.entity.Produto;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public class ProdutoConverter {
 
@@ -17,7 +19,7 @@ public class ProdutoConverter {
                 .precoVenda(produtodto.getPrecoVenda())
                 .tipoVendaEnums(produtodto.getTipoVendaEnums())
                 .precoCompra(produtodto.getPrecoCompra())
-                .quantidadeEstoque(produtodto.getQuantidadeEstoque())
+                .quantidadeEstoque(BigDecimal.ZERO)
                 .estoqueMinimo(produtodto.getEstoqueMinimo())
                 .build();
     }

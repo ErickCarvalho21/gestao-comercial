@@ -28,12 +28,12 @@ public class EstoqueController {
 
     }
 
-    @GetMapping("/movimentacao")
+    @GetMapping("/estoque/movimentacao")
     public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarMovimentacoes(){
         return ResponseEntity.ok(estoqueService.listarMovimentacoes());
     }
 
-    @GetMapping("/{produtoId}")
+    @GetMapping("/estoque/movimentacoes{produtoId}")
     public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarMovimentacoesID(@PathVariable Long produtoId){
         return ResponseEntity.ok(estoqueService.listarMovimentacaoPorProduto(produtoId));
 
