@@ -1,6 +1,6 @@
 package com.gestaocomercial.venda.enums;
 
-public enum TipoPagamentoEnums {
+public enum FormaPagamentoEnums {
     DINHEIRO,
     PIX,
     CARTAO
