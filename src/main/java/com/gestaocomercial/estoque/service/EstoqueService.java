@@ -29,6 +29,20 @@ public class EstoqueService {
     private final EstoqueConverter estoqueConverter;
     private final ProdutoService produtoService;
 
+
+    public void validarEstoqueDisponivel(Produto produto, BigDecimal quantidadeSolicitada){
+
+
+        BigDecimal estoqueAtual = produto.getQuantidadeEstoque();
+
+        if (quantidadeSolicitada.compareTo(estoqueAtual) > 0 ){
+            throw new EstoqueInsuficienteException(
+                    "Estoque insuficiente para a quantidade solicitada"
+            );
+        }
+
+    }
+
     private BigDecimal calcularNovoEstoque(Produto produto,
                                            MovimentacaoEstoqueDTORequest movimentacaoEstoqueDTORequest) {
 

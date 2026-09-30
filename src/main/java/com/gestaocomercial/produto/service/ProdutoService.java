@@ -59,11 +59,14 @@ public class ProdutoService {
 
            return produtoConverter.paraProdutoDTOResponse(produtoEncontrado);
     }
-    public Produto verificarProdutoExistenteId(Long id) {
-        return produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontradoException(
-                "Produto nao encontrado: " + id
+
+    public Produto buscaProdutoEntidadeCodigoBarras(String codigoBarras){
+        return produtoRepository.findByCodigoBarras(codigoBarras).orElseThrow(()-> new ProdutoNaoEncontradoException(
+                "produto não encontrado:  " + codigoBarras
         ));
     }
+
+
     public void validarCodigoBarrasDuplicado(String codigoBarras, long id){
         boolean codigoDuplicado =
                 produtoRepository.existsByCodigoBarrasAndIdNot(codigoBarras, id);
