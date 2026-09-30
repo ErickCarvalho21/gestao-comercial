@@ -18,4 +18,5 @@ public class ItemVendaDTOResponse {
     private BigDecimal totalItemVenda;
     private Long produtoId;
 
+
 }

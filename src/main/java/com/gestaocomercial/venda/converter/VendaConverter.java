@@ -11,11 +11,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class VendaConverter {
+
     private final ItemVendaConverter itemVendaConverter;
-
-
-
-
 
     public VendaDTOResponse paraVendaDTOResponse(Venda venda){
 
