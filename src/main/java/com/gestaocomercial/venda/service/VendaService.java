@@ -57,6 +57,17 @@ public class VendaService {
 
     }
 
+    private BigDecimal calcularQuantidadeAcumulada(Venda venda, Produto produto){
+        BigDecimal quantidadeAcumulada = BigDecimal.ZERO;
+
+        for(ItemVenda item : venda.getItens()){
+            if(item.getProduto().getId().equals(produto.getId())){
+            quantidadeAcumulada = quantidadeAcumulada.add(item.getQuantidadeItem());
+            }
+        }
+        return quantidadeAcumulada;
+    }
+
 
     @Transactional
     public VendaDTOResponse adicionarItem(Long id, ItemVendaDTORequest request){
@@ -78,7 +89,16 @@ public class VendaService {
             );
         }
 
-        estoqueService.validarEstoqueDisponivel(produtoEncontrado, request.getQuantidadeItem());
+        BigDecimal quantidadeAcumulada = calcularQuantidadeAcumulada(vendaEncontrada, produtoEncontrado);
+
+        BigDecimal quantidadeTotal = quantidadeAcumulada.add(request.getQuantidadeItem());
+
+
+
+
+        estoqueService.validarEstoqueDisponivel(produtoEncontrado, quantidadeTotal);
+
+
 
         validarQuantidadeItem(produtoEncontrado, request.getQuantidadeItem());
 
