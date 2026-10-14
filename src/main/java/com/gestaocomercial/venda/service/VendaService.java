@@ -5,13 +5,15 @@ import com.gestaocomercial.exception.*;
 import com.gestaocomercial.produto.entity.Produto;
 import com.gestaocomercial.produto.enums.TipoVendaEnums;
 import com.gestaocomercial.produto.service.ProdutoService;
-import com.gestaocomercial.venda.converter.ItemVendaConverter;
+
 import com.gestaocomercial.venda.converter.VendaConverter;
+import com.gestaocomercial.venda.dto.in.AlterarQuantidadeItemDTORequest;
 import com.gestaocomercial.venda.dto.in.ItemVendaDTORequest;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.entity.ItemVenda;
 import com.gestaocomercial.venda.entity.Venda;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
+import com.gestaocomercial.venda.repository.ItemVendaRepository;
 import com.gestaocomercial.venda.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aot.generate.ValueCodeGenerationException;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 public class VendaService {
 
     private final VendaRepository vendaRepository;
+    private final ItemVendaRepository itemVendaRepository;
     private final VendaConverter vendaConverter;
     private final ProdutoService produtoService;
     private final EstoqueService estoqueService;
@@ -57,6 +60,19 @@ public class VendaService {
 
     }
 
+    private BigDecimal calcularQuantidadeAcumulada(Venda venda, Produto produto){
+        BigDecimal quantidadeAcumulada = BigDecimal.ZERO;
+
+        for(ItemVenda item : venda.getItens()){
+            if(item.getProduto().getId().equals(produto.getId())){
+            quantidadeAcumulada = quantidadeAcumulada.add(item.getQuantidadeItem());
+            }
+        }
+        return quantidadeAcumulada;
+    }
+
+
+
 
     @Transactional
     public VendaDTOResponse adicionarItem(Long id, ItemVendaDTORequest request){
@@ -78,7 +94,16 @@ public class VendaService {
             );
         }
 
-        estoqueService.validarEstoqueDisponivel(produtoEncontrado, request.getQuantidadeItem());
+        BigDecimal quantidadeAcumulada = calcularQuantidadeAcumulada(vendaEncontrada, produtoEncontrado);
+
+        BigDecimal quantidadeTotal = quantidadeAcumulada.add(request.getQuantidadeItem());
+
+
+
+
+        estoqueService.validarEstoqueDisponivel(produtoEncontrado, quantidadeTotal);
+
+
 
         validarQuantidadeItem(produtoEncontrado, request.getQuantidadeItem());
 
