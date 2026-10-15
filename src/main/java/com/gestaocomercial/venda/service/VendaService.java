@@ -46,6 +46,13 @@ public class VendaService {
         ));
     }
 
+    public ItemVenda buscarItemVendaPorId(Long itemId){
+        return itemVendaRepository.findById(itemId).orElseThrow(()-> new ItenVendaNaoEncontradoException(
+                "item venda não foi encontrado" + itemId
+        ));
+    }
+
+
 
 
     void validarQuantidadeItem(Produto produtoEncontrado, BigDecimal quantidadeIten){
@@ -59,6 +66,22 @@ public class VendaService {
         }
 
     }
+    private BigDecimal calcularQuantidadeAcumuladaSemItemAtual(Venda venda, Produto produto, ItemVenda itemAtual){
+
+        BigDecimal quantidadeAcumulada = BigDecimal.ZERO;
+
+        for (ItemVenda item : venda.getItens()) {
+            if(item.getProduto().getId().equals(produto.getId()) && !item.getId().equals(itemAtual.getId())){
+                quantidadeAcumulada = quantidadeAcumulada.add(item.getQuantidadeItem());
+
+            }
+
+        }
+
+        return quantidadeAcumulada;
+
+    }
+
 
     private BigDecimal calcularQuantidadeAcumulada(Venda venda, Produto produto){
         BigDecimal quantidadeAcumulada = BigDecimal.ZERO;
@@ -69,6 +92,70 @@ public class VendaService {
             }
         }
         return quantidadeAcumulada;
+    }
+
+    private void recalcularTotalVenda(Venda venda) {
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (ItemVenda item : venda.getItens()) {
+            total = total.add(item.getTotalItemVenda());
+        }
+
+        venda.setValorTotal(total);
+
+
+    }
+
+
+    @Transactional
+    public VendaDTOResponse alterarQuantidade(Long vendaId, Long itemId, AlterarQuantidadeItemDTORequest request){
+
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "A venda não está aberta"
+            );
+        }
+
+        ItemVenda itemVendaEncontrada = buscarItemVendaPorId(itemId);
+
+
+
+        if(!itemVendaEncontrada.getVenda().getId().equals(vendaEncontrada.getId())){
+
+            throw  new ItemVendaNaoPertenceAVendaException(
+                    "Esse item não pertence a essa venda "
+            );
+        }
+
+        validarQuantidadeItem(itemVendaEncontrada.getProduto(), request.getQuantidadeItem());
+
+        BigDecimal quantidadeOutrosItens =
+                calcularQuantidadeAcumuladaSemItemAtual(
+                        vendaEncontrada,
+                        itemVendaEncontrada.getProduto(),
+                        itemVendaEncontrada
+                );
+
+        BigDecimal quantidadeTotalPretendida = quantidadeOutrosItens.add(request.getQuantidadeItem());
+
+        estoqueService.validarEstoqueDisponivel(itemVendaEncontrada.getProduto(), quantidadeTotalPretendida);
+
+        BigDecimal novoSubtotal = request.getQuantidadeItem().multiply(itemVendaEncontrada.getPrecoItemVenda());
+
+
+
+        itemVendaEncontrada.setQuantidadeItem(request.getQuantidadeItem());
+        itemVendaEncontrada.setTotalItemVenda(novoSubtotal);
+
+        recalcularTotalVenda(vendaEncontrada);
+
+        Venda salvarVenda = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(salvarVenda);
+
+
     }
 
 
