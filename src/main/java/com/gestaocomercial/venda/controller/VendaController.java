@@ -1,6 +1,7 @@
 package com.gestaocomercial.venda.controller;
 
 
+import com.gestaocomercial.venda.dto.in.AlterarQuantidadeItemDTORequest;
 import com.gestaocomercial.venda.dto.in.ItemVendaDTORequest;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.service.VendaService;
@@ -31,6 +32,13 @@ public class VendaController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(vendaService.adicionarItem(id, request));
 
+    }
+
+    @PatchMapping("/vendas/{vendaId}/itens/{itemId}")
+    public ResponseEntity<VendaDTOResponse> alterarItens(@PathVariable Long vendaId,
+                                                         @PathVariable Long itemId,
+                                                         @RequestBody @Valid AlterarQuantidadeItemDTORequest request){
+        return ResponseEntity.ok(vendaService.alterarQuantidade(vendaId, itemId, request));
     }
 
 
