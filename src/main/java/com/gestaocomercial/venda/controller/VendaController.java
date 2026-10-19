@@ -41,5 +41,11 @@ public class VendaController {
         return ResponseEntity.ok(vendaService.alterarQuantidade(vendaId, itemId, request));
     }
 
+    @DeleteMapping("/{vendaId}/itens/{itemId}")
+    public ResponseEntity<VendaDTOResponse> removeItens(@PathVariable Long vendaId, @PathVariable Long itemId){
+
+        return ResponseEntity.ok(vendaService.removerItem(vendaId, itemId));
+    }
+
 
 }
