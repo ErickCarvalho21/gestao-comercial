@@ -1,6 +1,7 @@
 package com.gestaocomercial.venda.dto.in;
 
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 public class AlterarQuantidadeItemDTORequest {
 
 
-    @NonNull
+    @NotNull
     @Positive
     private BigDecimal quantidadeItem;
 }

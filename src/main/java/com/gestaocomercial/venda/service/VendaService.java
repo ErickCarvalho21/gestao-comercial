@@ -16,7 +16,6 @@ import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import com.gestaocomercial.venda.repository.ItemVendaRepository;
 import com.gestaocomercial.venda.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.aot.generate.ValueCodeGenerationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -212,6 +211,36 @@ public class VendaService {
 
 
         Venda salvarVenda = vendaRepository.save(vendaEncontrada);
+        return vendaConverter.paraVendaDTOResponse(salvarVenda);
+
+    }
+
+    @Transactional
+    public VendaDTOResponse removerItem(Long vendaId, Long itemId){
+
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "A venda não está aberta"
+            );
+        }
+        ItemVenda itemVendaEncontrado = buscarItemVendaPorId(itemId);
+
+        if(!itemVendaEncontrado.getVenda().getId().equals(vendaEncontrada.getId())){
+
+            throw  new ItemVendaNaoPertenceAVendaException(
+                    "Esse item não pertence a essa venda "
+            );
+        }
+
+        vendaEncontrada.getItens().remove(itemVendaEncontrado);
+        itemVendaRepository.delete(itemVendaEncontrado);
+
+        recalcularTotalVenda(vendaEncontrada);
+
+        Venda salvarVenda = vendaRepository.save(vendaEncontrada);
+
         return vendaConverter.paraVendaDTOResponse(salvarVenda);
 
     }
