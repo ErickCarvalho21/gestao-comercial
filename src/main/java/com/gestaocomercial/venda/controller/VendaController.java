@@ -3,6 +3,7 @@ package com.gestaocomercial.venda.controller;
 
 import com.gestaocomercial.venda.dto.in.AlterarQuantidadeItemDTORequest;
 import com.gestaocomercial.venda.dto.in.ItemVendaDTORequest;
+import com.gestaocomercial.venda.dto.in.PagamentoVendaDTORequest;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.service.VendaService;
 import jakarta.validation.Valid;
@@ -40,6 +41,19 @@ public class VendaController {
                                                          @RequestBody @Valid AlterarQuantidadeItemDTORequest request){
         return ResponseEntity.ok(vendaService.alterarQuantidade(vendaId, itemId, request));
     }
+
+    @DeleteMapping("/{vendaId}/itens/{itemId}")
+    public ResponseEntity<VendaDTOResponse> removeItens(@PathVariable Long vendaId, @PathVariable Long itemId){
+
+        return ResponseEntity.ok(vendaService.removerItem(vendaId, itemId));
+    }
+
+    @PatchMapping("/{vendaId}/pagamento")
+    public  ResponseEntity<VendaDTOResponse> definiPagamento(@PathVariable Long vendaId,
+                                                             @RequestBody @Valid PagamentoVendaDTORequest request){
+        return ResponseEntity.ok(vendaService.definirPagamento(vendaId, request));
+    }
+
 
 
 }

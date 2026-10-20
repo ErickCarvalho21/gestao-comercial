@@ -1,5 +1,7 @@
 package com.gestaocomercial.venda.service;
 
+import com.gestaocomercial.estoque.dto.in.MovimentacaoEstoqueDTORequest;
+import com.gestaocomercial.estoque.enums.TipoMovimentacaoEnums;
 import com.gestaocomercial.estoque.service.EstoqueService;
 import com.gestaocomercial.exception.*;
 import com.gestaocomercial.produto.entity.Produto;
@@ -9,6 +11,7 @@ import com.gestaocomercial.produto.service.ProdutoService;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.in.AlterarQuantidadeItemDTORequest;
 import com.gestaocomercial.venda.dto.in.ItemVendaDTORequest;
+import com.gestaocomercial.venda.dto.in.PagamentoVendaDTORequest;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.entity.ItemVenda;
 import com.gestaocomercial.venda.entity.Venda;
@@ -16,7 +19,7 @@ import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import com.gestaocomercial.venda.repository.ItemVendaRepository;
 import com.gestaocomercial.venda.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.aot.generate.ValueCodeGenerationException;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -216,7 +219,118 @@ public class VendaService {
 
     }
 
+    @Transactional
+    public VendaDTOResponse removerItem(Long vendaId, Long itemId){
 
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "A venda não está aberta"
+            );
+        }
+        ItemVenda itemVendaEncontrado = buscarItemVendaPorId(itemId);
+
+        if(!itemVendaEncontrado.getVenda().getId().equals(vendaEncontrada.getId())){
+
+            throw  new ItemVendaNaoPertenceAVendaException(
+                    "Esse item não pertence a essa venda "
+            );
+        }
+
+        vendaEncontrada.getItens().remove(itemVendaEncontrado);
+        itemVendaRepository.delete(itemVendaEncontrado);
+
+        recalcularTotalVenda(vendaEncontrada);
+
+        Venda salvarVenda = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(salvarVenda);
+
+    }
+
+
+    @Transactional
+    public VendaDTOResponse definirPagamento( Long vendaId, PagamentoVendaDTORequest request){
+
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "Venda nao esta aberta"
+            );
+        }
+
+        if(vendaEncontrada.getItens().isEmpty()){
+            throw new VendaSemItensException(
+                    "A venda está vazia"
+            );
+        }
+
+        vendaEncontrada.setFormaPagamentosEnums(request.getFormaPagamentoEnums());
+        Venda vendaSalva = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(vendaSalva);
+
+
+    }
+
+    @Transactional
+    public VendaDTOResponse finalizarVenda (Long vendaId){
+
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "Venda nao esta aberta"
+            );
+        }
+
+        if(vendaEncontrada.getItens().isEmpty()){
+            throw new VendaSemItensException(
+                    "A venda está vazia"
+            );
+        }
+
+        if (vendaEncontrada.getFormaPagamentosEnums() == null) {
+            throw new FormaPagamentoNaoDefinidaException(
+                    "A forma de pagamento não foi definida"
+            );
+        }
+
+        for (ItemVenda item : vendaEncontrada.getItens()) {
+
+            estoqueService.validarEstoqueDisponivel(
+                    item.getProduto(),
+                    item.getQuantidadeItem()
+            );
+        }
+
+
+
+
+        for (ItemVenda item : vendaEncontrada.getItens()) {
+            MovimentacaoEstoqueDTORequest movimentacaoRequest =
+                    MovimentacaoEstoqueDTORequest.builder()
+                            .produtoId(item.getProduto().getId())
+                            .quantidade(item.getQuantidadeItem())
+                            .tipoMovimentacaoEnums(TipoMovimentacaoEnums.SAIDA)
+                            .build();
+
+            estoqueService.registrarMovimentacao(movimentacaoRequest);
+        }
+
+        vendaEncontrada.setStatusVendasEnums(
+                StatusVendaEnums.FINALIZADA
+        );
+
+        Venda vendaSalva = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(vendaSalva);
+    }
+
+
+    }
 
 
 
