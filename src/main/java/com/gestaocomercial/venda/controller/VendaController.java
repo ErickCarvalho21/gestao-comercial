@@ -55,5 +55,11 @@ public class VendaController {
     }
 
 
+    @PatchMapping("/{vendaId}/finalizar")
+    public ResponseEntity<VendaDTOResponse> finalizarVenda(@PathVariable Long vendaId){
+        return ResponseEntity.ok(vendaService.finalizarVenda(vendaId));
+    }
+
+
 
 }
