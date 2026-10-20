@@ -1,5 +1,7 @@
 package com.gestaocomercial.venda.service;
 
+import com.gestaocomercial.estoque.dto.in.MovimentacaoEstoqueDTORequest;
+import com.gestaocomercial.estoque.enums.TipoMovimentacaoEnums;
 import com.gestaocomercial.estoque.service.EstoqueService;
 import com.gestaocomercial.exception.*;
 import com.gestaocomercial.produto.entity.Produto;
@@ -17,6 +19,7 @@ import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import com.gestaocomercial.venda.repository.ItemVendaRepository;
 import com.gestaocomercial.venda.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -272,7 +275,62 @@ public class VendaService {
 
     }
 
+    @Transactional
+    public VendaDTOResponse finalizarVenda (Long vendaId){
 
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "Venda nao esta aberta"
+            );
+        }
+
+        if(vendaEncontrada.getItens().isEmpty()){
+            throw new VendaSemItensException(
+                    "A venda está vazia"
+            );
+        }
+
+        if (vendaEncontrada.getFormaPagamentosEnums() == null) {
+            throw new FormaPagamentoNaoDefinidaException(
+                    "A forma de pagamento não foi definida"
+            );
+        }
+
+        for (ItemVenda item : vendaEncontrada.getItens()) {
+
+            estoqueService.validarEstoqueDisponivel(
+                    item.getProduto(),
+                    item.getQuantidadeItem()
+            );
+        }
+
+
+
+
+        for (ItemVenda item : vendaEncontrada.getItens()) {
+            MovimentacaoEstoqueDTORequest movimentacaoRequest =
+                    MovimentacaoEstoqueDTORequest.builder()
+                            .produtoId(item.getProduto().getId())
+                            .quantidade(item.getQuantidadeItem())
+                            .tipoMovimentacaoEnums(TipoMovimentacaoEnums.SAIDA)
+                            .build();
+
+            estoqueService.registrarMovimentacao(movimentacaoRequest);
+        }
+
+        vendaEncontrada.setStatusVendasEnums(
+                StatusVendaEnums.FINALIZADA
+        );
+
+        Venda vendaSalva = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(vendaSalva);
+    }
+
+
+    }
 
 
 
