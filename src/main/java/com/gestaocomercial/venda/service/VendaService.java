@@ -330,8 +330,32 @@ public class VendaService {
     }
 
 
+    @Transactional
+    public VendaDTOResponse cancelarVenda (Long vendaId){
+
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+
+        if (vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA ){
+
+            throw new StatusVendaInvalidoException(
+                    "A venda precisa estar aberta para ser cancelada"
+            );
+
+        }
+
+        vendaEncontrada.setStatusVendasEnums(StatusVendaEnums.CANCELADA);
+
+        Venda salvarVenda = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(salvarVenda);
     }
 
 
 
+
 }
+
+
+
+

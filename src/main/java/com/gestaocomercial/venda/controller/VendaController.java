@@ -55,5 +55,16 @@ public class VendaController {
     }
 
 
+    @PatchMapping("/{vendaId}/finalizar")
+    public ResponseEntity<VendaDTOResponse> finalizarVenda(@PathVariable Long vendaId){
+        return ResponseEntity.ok(vendaService.finalizarVenda(vendaId));
+    }
+
+    @PatchMapping("/{vendaId}/cancelar")
+    public ResponseEntity<VendaDTOResponse> cancelarVenda(@PathVariable Long vendaId){
+        return ResponseEntity.ok(vendaService.cancelarVenda(vendaId));
+    }
+
+
 
 }
