@@ -9,6 +9,7 @@ import com.gestaocomercial.produto.service.ProdutoService;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.in.AlterarQuantidadeItemDTORequest;
 import com.gestaocomercial.venda.dto.in.ItemVendaDTORequest;
+import com.gestaocomercial.venda.dto.in.PagamentoVendaDTORequest;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.entity.ItemVenda;
 import com.gestaocomercial.venda.entity.Venda;
@@ -242,6 +243,32 @@ public class VendaService {
         Venda salvarVenda = vendaRepository.save(vendaEncontrada);
 
         return vendaConverter.paraVendaDTOResponse(salvarVenda);
+
+    }
+
+
+    @Transactional
+    public VendaDTOResponse definirPagamento( Long vendaId, PagamentoVendaDTORequest request){
+
+        Venda vendaEncontrada = buscarVendaEntidadePorId(vendaId);
+
+        if(vendaEncontrada.getStatusVendasEnums() != StatusVendaEnums.ABERTA){
+            throw new StatusVendaInvalidoException(
+                    "Venda nao esta aberta"
+            );
+        }
+
+        if(vendaEncontrada.getItens().isEmpty()){
+            throw new VendaSemItensException(
+                    "A venda está vazia"
+            );
+        }
+
+        vendaEncontrada.setFormaPagamentosEnums(request.getFormaPagamentoEnums());
+        Venda vendaSalva = vendaRepository.save(vendaEncontrada);
+
+        return vendaConverter.paraVendaDTOResponse(vendaSalva);
+
 
     }
 
