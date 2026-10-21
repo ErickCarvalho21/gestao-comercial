@@ -28,7 +28,7 @@ public class Caixa {
     private StatusCaixaEnums statusCaixaEnums;
 
     @Column(nullable = false)
-    private BigDecimal saldoIncial;
+    private BigDecimal saldoInicial;
 
     private BigDecimal saldoFinal;
 
