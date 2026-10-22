@@ -19,7 +19,7 @@ import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import com.gestaocomercial.venda.repository.ItemVendaRepository;
 import com.gestaocomercial.venda.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
