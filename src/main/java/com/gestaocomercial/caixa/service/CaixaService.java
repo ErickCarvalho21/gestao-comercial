@@ -37,4 +37,33 @@ public class CaixaService {
         }
     }
 
+    public CaixaResponseDTO buscarCaixaPorId(Long caixaId){
+
+        Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaIndisponivelException(
+                "Caixa não encontrado" + caixaId
+        ));
+
+        return caixaConverter.paraCaixaResponseDTO(caixaEncontrado);
+
+    }
+
+    public CaixaResponseDTO buscarCaixaAberto(){
+
+        Caixa caixaEncontrado = caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
+                .orElseThrow(()-> new CaixaIndisponivelException(
+                "Caixa aberto não foi encontrado"
+        ));
+
+        return caixaConverter.paraCaixaResponseDTO(caixaEncontrado);
+    }
+
+    private Caixa buscarCaixaAbertoPorEntidade(){
+
+        return caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
+                .orElseThrow(()-> new CaixaIndisponivelException(
+                        "Caixa aberto não foi encontrado"
+                ));
+
+    }
+
 }
