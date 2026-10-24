@@ -37,7 +37,7 @@ public class CaixaService {
         }
     }
 
-    private CaixaResponseDTO buscarCaixaPorId(Long caixaId){
+    public CaixaResponseDTO buscarCaixaPorId(Long caixaId){
 
         Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaIndisponivelException(
                 "Caixa não encontrado" + caixaId

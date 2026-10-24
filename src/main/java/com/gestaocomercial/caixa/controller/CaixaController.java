@@ -25,7 +25,7 @@ public class CaixaController {
 
     @PutMapping
     public ResponseEntity<CaixaResponseDTO> buscarCaixaId(@PathVariable Long caixaId){
-        return ResponseEntity.ok(caixaService.buscarCaixaAberto());
+        return ResponseEntity.ok(caixaService.buscarCaixaPorId(caixaId));
     }
 
 
