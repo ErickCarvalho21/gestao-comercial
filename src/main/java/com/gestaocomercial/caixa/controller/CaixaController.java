@@ -23,9 +23,14 @@ public class CaixaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(caixaService.abrirCaixa(request));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<CaixaResponseDTO> buscarCaixaId(@PathVariable Long caixaId){
         return ResponseEntity.ok(caixaService.buscarCaixaPorId(caixaId));
+    }
+
+    @GetMapping("/{id}/aberto")
+    public  ResponseEntity<CaixaResponseDTO> buscarCaixaAberto(){
+        return ResponseEntity.ok(caixaService.buscarCaixaAberto());
     }
 
 
