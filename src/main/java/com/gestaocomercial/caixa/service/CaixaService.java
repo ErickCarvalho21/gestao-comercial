@@ -47,7 +47,7 @@ public class CaixaService {
 
     }
 
-    private CaixaResponseDTO buscarCaixaAberto(){
+    public CaixaResponseDTO buscarCaixaAberto(){
 
         Caixa caixaEncontrado = caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
                 .orElseThrow(()-> new CaixaIndisponivelException(
