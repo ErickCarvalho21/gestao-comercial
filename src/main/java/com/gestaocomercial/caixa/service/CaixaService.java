@@ -37,7 +37,7 @@ public class CaixaService {
         }
     }
 
-    private CaixaResponseDTO buscarCaixa(Long caixaId){
+    private CaixaResponseDTO buscarCaixaPorId(Long caixaId){
 
         Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaIndisponivelException(
                 "Caixa não encontrado" + caixaId
@@ -45,7 +45,24 @@ public class CaixaService {
 
         return caixaConverter.paraCaixaResponseDTO(caixaEncontrado);
 
+    }
 
+    private CaixaResponseDTO buscarCaixaAberto(){
+
+        Caixa caixaEncontrado = caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
+                .orElseThrow(()-> new CaixaIndisponivelException(
+                "Caixa aberto não foi encontrado"
+        ));
+
+        return caixaConverter.paraCaixaResponseDTO(caixaEncontrado);
+    }
+
+    private Caixa buscarCaixaAbertoPorEntidade(){
+
+        return caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
+                .orElseThrow(()-> new CaixaIndisponivelException(
+                        "Caixa aberto não foi encontrado"
+                ));
 
     }
 
