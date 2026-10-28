@@ -148,6 +148,41 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(CaixaIndisponivelException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerConflictException(CaixaIndisponivelException ex,
+                                                                     HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildError(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                request.getRequestURI()
+        ));
+    }
+
+    @ExceptionHandler(CaixaNaoEncontradoException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerNotFoundException(CaixaNaoEncontradoException ex,
+                                                                     HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildError(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                request.getRequestURI()
+        ));
+    }
+
+
+    @ExceptionHandler(CaixaAbertoNaoEncontradoException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerNotFoundException(CaixaAbertoNaoEncontradoException ex,
+                                                                     HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildError(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                request.getRequestURI()
+        ));
+    }
+
+
+
+
+
 
 
 

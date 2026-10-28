@@ -7,7 +7,9 @@ import com.gestaocomercial.caixa.dtos.out.CaixaResponseDTO;
 import com.gestaocomercial.caixa.entity.Caixa;
 import com.gestaocomercial.caixa.enums.StatusCaixaEnums;
 import com.gestaocomercial.caixa.repository.CaixaRepository;
+import com.gestaocomercial.exception.CaixaAbertoNaoEncontradoException;
 import com.gestaocomercial.exception.CaixaIndisponivelException;
+import com.gestaocomercial.exception.CaixaNaoEncontradoException;
 import com.gestaocomercial.venda.entity.Venda;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
@@ -47,7 +49,7 @@ public class CaixaService {
 
     public CaixaResponseDTO buscarCaixaPorId(Long caixaId){
 
-        Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaIndisponivelException(
+        Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaNaoEncontradoException(
                 "Caixa não encontrado" + caixaId
         ));
 
@@ -64,7 +66,7 @@ public class CaixaService {
     public Caixa buscarCaixaAbertoEntidade(){
 
         return caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
-                .orElseThrow(()-> new CaixaIndisponivelException(
+                .orElseThrow(()-> new CaixaAbertoNaoEncontradoException(
                         "Caixa aberto não foi encontrado"
                 ));
     }
