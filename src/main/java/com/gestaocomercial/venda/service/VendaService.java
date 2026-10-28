@@ -1,5 +1,7 @@
 package com.gestaocomercial.venda.service;
 
+import com.gestaocomercial.caixa.entity.Caixa;
+import com.gestaocomercial.caixa.service.CaixaService;
 import com.gestaocomercial.estoque.dto.in.MovimentacaoEstoqueDTORequest;
 import com.gestaocomercial.estoque.enums.TipoMovimentacaoEnums;
 import com.gestaocomercial.estoque.service.EstoqueService;
@@ -34,13 +36,16 @@ public class VendaService {
     private final VendaConverter vendaConverter;
     private final ProdutoService produtoService;
     private final EstoqueService estoqueService;
+    private final CaixaService caixaService;
 
     public VendaDTOResponse abrirVenda(){
 
+        Caixa caixaEncontrado = caixaService.buscarCaixaAbertoEntidade();
+
         Venda venda = Venda.builder().build();
+        venda.setCaixa(caixaEncontrado);
         Venda vendaSalva = vendaRepository.save(venda);
         return vendaConverter.paraVendaDTOResponse(vendaSalva);
-
     }
 
     public Venda buscarVendaEntidadePorId(long id){
