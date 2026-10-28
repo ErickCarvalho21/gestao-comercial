@@ -13,12 +13,15 @@ import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class CaixaService {
+
 
     private final CaixaRepository caixaRepository;
     private final CaixaConverter caixaConverter;
@@ -98,6 +101,51 @@ public class CaixaService {
         }
         return totalVenda;
 
+    }
+    @Transactional
+    public CaixaResponseDTO fecharCaixa() {
+
+        Caixa caixaEncontrado = buscarCaixaAbertoEntidade();
+
+        BigDecimal totalPix =
+                calcularTotalPorFormaPagamento(
+                        caixaEncontrado,
+                        FormaPagamentoEnums.PIX
+                );
+
+        BigDecimal totalDinheiro =
+                calcularTotalPorFormaPagamento(
+                        caixaEncontrado,
+                        FormaPagamentoEnums.DINHEIRO
+                );
+
+        BigDecimal totalCartao =
+                calcularTotalPorFormaPagamento(
+                        caixaEncontrado,
+                        FormaPagamentoEnums.CARTAO
+                );
+
+        BigDecimal totalVendido =
+                calcularTotalVendido(caixaEncontrado);
+
+        BigDecimal saldoFinal =
+                caixaEncontrado.getSaldoInicial()
+                        .add(totalDinheiro);
+
+        caixaEncontrado.setSaldoFinal(saldoFinal);
+
+        caixaEncontrado.setDataFechamento(
+                LocalDateTime.now()
+        );
+
+        caixaEncontrado.setStatusCaixaEnums(
+                StatusCaixaEnums.FECHADO
+        );
+
+        Caixa caixaSalvo =
+                caixaRepository.save(caixaEncontrado);
+
+        return caixaConverter.paraCaixaResponseDTO(caixaSalvo);
     }
 
 
