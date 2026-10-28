@@ -138,6 +138,11 @@ public class CaixaService {
                 LocalDateTime.now()
         );
 
+        caixaEncontrado.setTotalPix(totalPix);
+        caixaEncontrado.setTotalDinheiro(totalDinheiro);
+        caixaEncontrado.setTotalCartao(totalCartao);
+        caixaEncontrado.setTotalVendido(totalVendido);
+
         caixaEncontrado.setStatusCaixaEnums(
                 StatusCaixaEnums.FECHADO
         );

@@ -37,6 +37,10 @@ public class CaixaConverter {
                 .dataAbertura(caixa.getDataAbertura())
                 .dataFechamento(caixa.getDataFechamento())
                 .statusCaixaEnums(caixa.getStatusCaixaEnums())
+                .totalVendido(caixa.getTotalVendido())
+                .totalPix(caixa.getTotalPix())
+                .totalDinheiro(caixa.getTotalDinheiro())
+                .totalCartao(caixa.getTotalCartao())
                 .vendas(caixaDTO)
                 .build();
     }

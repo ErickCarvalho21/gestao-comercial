@@ -34,4 +34,12 @@ public class CaixaResponseDTO {
 
     private LocalDateTime dataFechamento;
 
+    private BigDecimal totalDinheiro;
+
+    private BigDecimal totalPix;
+
+    private BigDecimal totalCartao;
+
+    private BigDecimal totalVendido;
+
 }
