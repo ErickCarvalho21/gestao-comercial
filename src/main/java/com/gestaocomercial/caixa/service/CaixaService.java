@@ -9,8 +9,12 @@ import com.gestaocomercial.caixa.enums.StatusCaixaEnums;
 import com.gestaocomercial.caixa.repository.CaixaRepository;
 import com.gestaocomercial.exception.CaixaIndisponivelException;
 import com.gestaocomercial.venda.entity.Venda;
+import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
+import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +67,24 @@ public class CaixaService {
                 .orElseThrow(()-> new CaixaIndisponivelException(
                         "Caixa aberto não foi encontrado"
                 ));
+    }
+
+    public BigDecimal calcularTotalPorFormaPagamento(Caixa caixa, FormaPagamentoEnums pagamentoEnums){
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (Venda venda : caixa.getVendas()){
+            if (venda.getStatusVendasEnums().equals(StatusVendaEnums.FINALIZADA)){
+                if (venda.getFormaPagamentosEnums().equals(pagamentoEnums)){
+
+                    total = total.add(venda.getValorTotal());
+                }
+            }
+        }
+        return total;
 
     }
+
+
 
 }
