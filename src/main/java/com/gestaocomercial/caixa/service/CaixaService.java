@@ -85,6 +85,21 @@ public class CaixaService {
 
     }
 
+    public BigDecimal calcularTotalVendido(Caixa caixa){
+
+        BigDecimal totalVenda = BigDecimal.ZERO;
+
+        for(Venda venda : caixa.getVendas()){
+            if(venda.getStatusVendasEnums().equals(StatusVendaEnums.FINALIZADA)){
+
+                totalVenda = totalVenda.add(venda.getValorTotal());
+
+            }
+        }
+        return totalVenda;
+
+    }
+
 
 
 }
