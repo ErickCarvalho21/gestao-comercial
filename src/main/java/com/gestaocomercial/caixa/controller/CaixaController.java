@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/caixa")
 @RequiredArgsConstructor
@@ -36,6 +38,14 @@ public class CaixaController {
     @PatchMapping("/fechar")
     public  ResponseEntity<CaixaResponseDTO> fecharCaixa(){
         return ResponseEntity.ok(caixaService.fecharCaixa());
+    }
+
+    @GetMapping("/historico")
+    public ResponseEntity<List<CaixaResponseDTO>> listarHistoricoCaixas() {
+
+        return ResponseEntity.ok(
+                caixaService.listarHistoricoCaixas()
+        );
     }
 
 

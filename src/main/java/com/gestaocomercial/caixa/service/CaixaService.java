@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -152,6 +153,18 @@ public class CaixaService {
 
         return caixaConverter.paraCaixaResponseDTO(caixaSalvo);
     }
+
+    public List<CaixaResponseDTO> listarHistoricoCaixas() {
+
+        List<Caixa> caixas =
+                caixaRepository.findAllByOrderByDataAberturaDesc();
+
+        return caixas.stream()
+                .map(caixaConverter::paraCaixaResponseDTO)
+                .toList();
+    }
+
+
 
 
 
