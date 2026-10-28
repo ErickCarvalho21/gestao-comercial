@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/caixa")
 @RequiredArgsConstructor
@@ -23,14 +25,27 @@ public class CaixaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(caixaService.abrirCaixa(request));
     }
 
-    @PutMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CaixaResponseDTO> buscarCaixaId(@PathVariable Long caixaId){
         return ResponseEntity.ok(caixaService.buscarCaixaPorId(caixaId));
     }
 
-    @GetMapping("/{id}/aberto")
+    @GetMapping("/aberto")
     public  ResponseEntity<CaixaResponseDTO> buscarCaixaAberto(){
         return ResponseEntity.ok(caixaService.buscarCaixaAberto());
+    }
+
+    @PatchMapping("/fechar")
+    public  ResponseEntity<CaixaResponseDTO> fecharCaixa(){
+        return ResponseEntity.ok(caixaService.fecharCaixa());
+    }
+
+    @GetMapping("/historico")
+    public ResponseEntity<List<CaixaResponseDTO>> listarHistoricoCaixas() {
+
+        return ResponseEntity.ok(
+                caixaService.listarHistoricoCaixas()
+        );
     }
 
 

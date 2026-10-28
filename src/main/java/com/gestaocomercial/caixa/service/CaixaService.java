@@ -7,7 +7,9 @@ import com.gestaocomercial.caixa.dtos.out.CaixaResponseDTO;
 import com.gestaocomercial.caixa.entity.Caixa;
 import com.gestaocomercial.caixa.enums.StatusCaixaEnums;
 import com.gestaocomercial.caixa.repository.CaixaRepository;
+import com.gestaocomercial.exception.CaixaAbertoNaoEncontradoException;
 import com.gestaocomercial.exception.CaixaIndisponivelException;
+import com.gestaocomercial.exception.CaixaNaoEncontradoException;
 import com.gestaocomercial.venda.entity.Venda;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +49,7 @@ public class CaixaService {
 
     public CaixaResponseDTO buscarCaixaPorId(Long caixaId){
 
-        Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaIndisponivelException(
+        Caixa caixaEncontrado = caixaRepository.findById(caixaId).orElseThrow(()-> new CaixaNaoEncontradoException(
                 "Caixa não encontrado" + caixaId
         ));
 
@@ -56,44 +59,38 @@ public class CaixaService {
 
     public CaixaResponseDTO buscarCaixaAberto(){
 
-        Caixa caixaEncontrado = caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
-                .orElseThrow(()-> new CaixaIndisponivelException(
-                "Caixa aberto não foi encontrado"
-        ));
-
+        Caixa caixaEncontrado = buscarCaixaAbertoEntidade();
         return caixaConverter.paraCaixaResponseDTO(caixaEncontrado);
     }
 
     public Caixa buscarCaixaAbertoEntidade(){
 
         return caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
-                .orElseThrow(()-> new CaixaIndisponivelException(
+                .orElseThrow(()-> new CaixaAbertoNaoEncontradoException(
                         "Caixa aberto não foi encontrado"
                 ));
     }
 
-    public BigDecimal calcularTotalPorFormaPagamento(Caixa caixa, FormaPagamentoEnums pagamentoEnums){
+    private BigDecimal calcularTotalPorFormaPagamento(Caixa caixa, FormaPagamentoEnums pagamentoEnums){
 
         BigDecimal total = BigDecimal.ZERO;
 
         for (Venda venda : caixa.getVendas()){
-            if (venda.getStatusVendasEnums().equals(StatusVendaEnums.FINALIZADA)){
-                if (venda.getFormaPagamentosEnums().equals(pagamentoEnums)){
-
+            if (venda.getStatusVendasEnums() == StatusVendaEnums.FINALIZADA && venda.getFormaPagamentosEnums().equals(pagamentoEnums)){
                     total = total.add(venda.getValorTotal());
-                }
+
             }
         }
         return total;
 
     }
 
-    public BigDecimal calcularTotalVendido(Caixa caixa){
+    private BigDecimal calcularTotalVendido(Caixa caixa){
 
         BigDecimal totalVenda = BigDecimal.ZERO;
 
         for(Venda venda : caixa.getVendas()){
-            if(venda.getStatusVendasEnums().equals(StatusVendaEnums.FINALIZADA)){
+            if(venda.getStatusVendasEnums() == StatusVendaEnums.FINALIZADA){
 
                 totalVenda = totalVenda.add(venda.getValorTotal());
 
@@ -138,6 +135,11 @@ public class CaixaService {
                 LocalDateTime.now()
         );
 
+        caixaEncontrado.setTotalPix(totalPix);
+        caixaEncontrado.setTotalDinheiro(totalDinheiro);
+        caixaEncontrado.setTotalCartao(totalCartao);
+        caixaEncontrado.setTotalVendido(totalVendido);
+
         caixaEncontrado.setStatusCaixaEnums(
                 StatusCaixaEnums.FECHADO
         );
@@ -147,6 +149,18 @@ public class CaixaService {
 
         return caixaConverter.paraCaixaResponseDTO(caixaSalvo);
     }
+
+    public List<CaixaResponseDTO> listarHistoricoCaixas() {
+
+        List<Caixa> caixas =
+                caixaRepository.findAllByOrderByDataAberturaDesc();
+
+        return caixas.stream()
+                .map(caixaConverter::paraCaixaResponseDTO)
+                .toList();
+    }
+
+
 
 
 

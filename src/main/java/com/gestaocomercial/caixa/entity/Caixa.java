@@ -37,6 +37,19 @@ public class Caixa {
     @Builder.Default
     private List<Venda> vendas = new ArrayList<>();
 
+    @Builder.Default
+    private BigDecimal totalPix = BigDecimal.ZERO;
+
+    @Builder.Default
+    private BigDecimal totalCartao = BigDecimal.ZERO;
+
+    @Builder.Default
+    private BigDecimal totalDinheiro = BigDecimal.ZERO;
+
+    @Builder.Default
+    private BigDecimal totalVendido = BigDecimal.ZERO;
+
+
     @Column(nullable = false)
     private LocalDateTime dataAbertura;
 

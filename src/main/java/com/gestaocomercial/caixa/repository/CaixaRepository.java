@@ -6,15 +6,18 @@ import com.gestaocomercial.caixa.enums.StatusCaixaEnums;
 import com.gestaocomercial.produto.entity.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 
 public interface CaixaRepository extends JpaRepository<Caixa, Long> {
 
 
-    Optional<Caixa> findById(Long id);
-
     Optional<Caixa> findByStatusCaixaEnums(StatusCaixaEnums status);
 
     Boolean existsByStatusCaixaEnums(StatusCaixaEnums status);
+
+    List<Caixa> findAllByOrderByDataAberturaDesc();
+
+
 }
