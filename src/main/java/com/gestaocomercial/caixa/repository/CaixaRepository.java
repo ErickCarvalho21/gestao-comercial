@@ -13,8 +13,6 @@ import java.util.Optional;
 public interface CaixaRepository extends JpaRepository<Caixa, Long> {
 
 
-    Optional<Caixa> findById(Long id);
-
     Optional<Caixa> findByStatusCaixaEnums(StatusCaixaEnums status);
 
     Boolean existsByStatusCaixaEnums(StatusCaixaEnums status);

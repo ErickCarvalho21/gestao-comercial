@@ -57,11 +57,7 @@ public class CaixaService {
 
     public CaixaResponseDTO buscarCaixaAberto(){
 
-        Caixa caixaEncontrado = caixaRepository.findByStatusCaixaEnums(StatusCaixaEnums.ABERTO)
-                .orElseThrow(()-> new CaixaIndisponivelException(
-                "Caixa aberto não foi encontrado"
-        ));
-
+        Caixa caixaEncontrado = buscarCaixaAbertoEntidade();
         return caixaConverter.paraCaixaResponseDTO(caixaEncontrado);
     }
 
@@ -73,28 +69,26 @@ public class CaixaService {
                 ));
     }
 
-    public BigDecimal calcularTotalPorFormaPagamento(Caixa caixa, FormaPagamentoEnums pagamentoEnums){
+    private BigDecimal calcularTotalPorFormaPagamento(Caixa caixa, FormaPagamentoEnums pagamentoEnums){
 
         BigDecimal total = BigDecimal.ZERO;
 
         for (Venda venda : caixa.getVendas()){
-            if (venda.getStatusVendasEnums().equals(StatusVendaEnums.FINALIZADA)){
-                if (venda.getFormaPagamentosEnums().equals(pagamentoEnums)){
-
+            if (venda.getStatusVendasEnums() == StatusVendaEnums.FINALIZADA && venda.getFormaPagamentosEnums().equals(pagamentoEnums)){
                     total = total.add(venda.getValorTotal());
-                }
+
             }
         }
         return total;
 
     }
 
-    public BigDecimal calcularTotalVendido(Caixa caixa){
+    private BigDecimal calcularTotalVendido(Caixa caixa){
 
         BigDecimal totalVenda = BigDecimal.ZERO;
 
         for(Venda venda : caixa.getVendas()){
-            if(venda.getStatusVendasEnums().equals(StatusVendaEnums.FINALIZADA)){
+            if(venda.getStatusVendasEnums() == StatusVendaEnums.FINALIZADA){
 
                 totalVenda = totalVenda.add(venda.getValorTotal());
 
