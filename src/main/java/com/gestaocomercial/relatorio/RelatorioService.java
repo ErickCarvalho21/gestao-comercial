@@ -36,5 +36,28 @@ public class RelatorioService {
                 .map(vendaConverter::paraVendaDTOResponse)
                 .toList();
     }
+
+
+    public List<VendaDTOResponse> listarVendasPorPeriodo(
+            LocalDate dataInicial,
+            LocalDate dataFinal
+    ) {
+
+        LocalDateTime inicio =
+                dataInicial.atStartOfDay();
+
+        LocalDateTime fim =
+                dataFinal.plusDays(1).atStartOfDay();
+
+        List<Venda> vendas =
+                vendaRepository.findByDataVendaBetween(
+                        inicio,
+                        fim
+                );
+
+        return vendas.stream()
+                .map(vendaConverter::paraVendaDTOResponse)
+                .toList();
+    }
 }
-}
+
