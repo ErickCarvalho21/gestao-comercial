@@ -48,6 +48,11 @@ public class VendaService {
 
         Caixa caixaEncontrado = caixaService.buscarCaixaAbertoEntidade();
 
+        caixaService.validarFuncionarioResponsavel(
+                caixaEncontrado,
+                usuario
+        );
+
         Venda venda = Venda.builder().build();
         venda.setCaixa(caixaEncontrado);
         venda.setUsuario(usuario);

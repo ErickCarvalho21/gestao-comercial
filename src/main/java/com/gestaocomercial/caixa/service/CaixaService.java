@@ -10,6 +10,7 @@ import com.gestaocomercial.caixa.repository.CaixaRepository;
 import com.gestaocomercial.exception.CaixaAbertoNaoEncontradoException;
 import com.gestaocomercial.exception.CaixaIndisponivelException;
 import com.gestaocomercial.exception.CaixaNaoEncontradoException;
+import com.gestaocomercial.exception.FuncionarioNaoPertenceAoCaixaException;
 import com.gestaocomercial.usuario.entity.Usuario;
 import com.gestaocomercial.usuario.repository.UsuarioRepository;
 import com.gestaocomercial.usuario.service.UsuarioService;
@@ -49,6 +50,15 @@ public class CaixaService {
 
         return caixaConverter.paraCaixaResponseDTO(
                 caixaRepository.save(caixaConverter.converterCaixa(request)));
+    }
+
+    public void validarFuncionarioResponsavel(Caixa caixa, Usuario usuario) {
+
+        if (!caixa.getUsuario().getId().equals(usuario.getId())) {
+            throw new FuncionarioNaoPertenceAoCaixaException(
+                    "O funcionário autenticado não é responsável por este caixa"
+            );
+        }
     }
 
 
