@@ -41,7 +41,12 @@ public class UsuarioService {
      @Transactional
      public UsuarioDTOResponse cadastrarUsuario(UsuarioDTORequest request){
 
-         validarEmailDisponivel(request.getEmail());
+         String emailNormalizado =
+                 request.getEmail()
+                         .trim()
+                         .toLowerCase();
+
+         validarEmailDisponivel(emailNormalizado);
 
          Usuario usuario = usuarioConverter.paraUsuario(request);
          usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
