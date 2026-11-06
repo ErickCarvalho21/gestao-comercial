@@ -194,6 +194,18 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(FuncionarioNaoPertenceAoCaixaException.class)
+    public ResponseEntity<ErrorDTOResponse> handlerConflictException(
+            FuncionarioNaoPertenceAoCaixaException ex, HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildError(
+                        HttpStatus.CONFLICT,
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
 
 
 

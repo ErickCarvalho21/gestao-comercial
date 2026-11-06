@@ -10,10 +10,17 @@ import com.gestaocomercial.caixa.repository.CaixaRepository;
 import com.gestaocomercial.exception.CaixaAbertoNaoEncontradoException;
 import com.gestaocomercial.exception.CaixaIndisponivelException;
 import com.gestaocomercial.exception.CaixaNaoEncontradoException;
+import com.gestaocomercial.exception.FuncionarioNaoPertenceAoCaixaException;
+import com.gestaocomercial.usuario.entity.Usuario;
+import com.gestaocomercial.usuario.repository.UsuarioRepository;
+import com.gestaocomercial.usuario.service.UsuarioService;
 import com.gestaocomercial.venda.entity.Venda;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +35,33 @@ public class CaixaService {
 
     private final CaixaRepository caixaRepository;
     private final CaixaConverter caixaConverter;
+    private final UsuarioService usuarioService;
 
 
     public CaixaResponseDTO abrirCaixa(CaixaRequestDTO request){
 
+        Usuario usuario =
+                usuarioService.buscarUsuarioAutenticado();
+
         validarCaixaDisponivelParaAbertura();
+
+        Caixa caixa = caixaConverter.converterCaixa(request);
+        caixa.setUsuario(usuario);
 
         return caixaConverter.paraCaixaResponseDTO(
                 caixaRepository.save(caixaConverter.converterCaixa(request)));
     }
+
+    public void validarFuncionarioResponsavel(Caixa caixa, Usuario usuario) {
+
+        if (!caixa.getUsuario().getId().equals(usuario.getId())) {
+            throw new FuncionarioNaoPertenceAoCaixaException(
+                    "O funcionário autenticado não é responsável por este caixa"
+            );
+        }
+    }
+
+
 
     private void validarCaixaDisponivelParaAbertura(){
 

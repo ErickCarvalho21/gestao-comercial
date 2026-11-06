@@ -10,6 +10,8 @@ import com.gestaocomercial.produto.entity.Produto;
 import com.gestaocomercial.produto.enums.TipoVendaEnums;
 import com.gestaocomercial.produto.service.ProdutoService;
 
+import com.gestaocomercial.usuario.entity.Usuario;
+import com.gestaocomercial.usuario.service.UsuarioService;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.in.AlterarQuantidadeItemDTORequest;
 import com.gestaocomercial.venda.dto.in.ItemVendaDTORequest;
@@ -37,13 +39,23 @@ public class VendaService {
     private final ProdutoService produtoService;
     private final EstoqueService estoqueService;
     private final CaixaService caixaService;
+    private final UsuarioService usuarioService;
 
     public VendaDTOResponse abrirVenda(){
 
+        Usuario usuario =
+                usuarioService.buscarUsuarioAutenticado();
+
         Caixa caixaEncontrado = caixaService.buscarCaixaAbertoEntidade();
+
+        caixaService.validarFuncionarioResponsavel(
+                caixaEncontrado,
+                usuario
+        );
 
         Venda venda = Venda.builder().build();
         venda.setCaixa(caixaEncontrado);
+        venda.setUsuario(usuario);
         Venda vendaSalva = vendaRepository.save(venda);
         return vendaConverter.paraVendaDTOResponse(vendaSalva);
     }

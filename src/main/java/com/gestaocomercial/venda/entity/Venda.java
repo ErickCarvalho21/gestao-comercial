@@ -2,6 +2,7 @@ package com.gestaocomercial.venda.entity;
 
 
 import com.gestaocomercial.caixa.entity.Caixa;
+import com.gestaocomercial.usuario.entity.Usuario;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import jakarta.persistence.*;
@@ -33,6 +34,11 @@ public class Venda {
     @ManyToOne
     @JoinColumn(name = "caixa_id")
     private Caixa caixa;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
     @Column(nullable = false)
     private BigDecimal valorTotal;
     @Column
