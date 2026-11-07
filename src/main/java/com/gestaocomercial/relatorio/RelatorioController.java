@@ -41,4 +41,13 @@ public class RelatorioController {
                 relatorioService.calcularFaturamentoDiario()
         );
     }
+    @GetMapping("/faturamento/periodo")
+    public ResponseEntity<BigDecimal> calcularFaturamentoPorPeriodo(
+            @RequestParam LocalDate dataInicial,
+            @RequestParam LocalDate dataFinal
+    ) {
+        return ResponseEntity.ok(
+                relatorioService.calcularFaturamentoPorPeriodo(dataInicial, dataFinal)
+        );
+    }
 }

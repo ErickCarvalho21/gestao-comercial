@@ -87,6 +87,37 @@ public class RelatorioService {
         return faturamento;
     }
 
+    public BigDecimal calcularFaturamentoPorPeriodo(
+            LocalDate dataInicial,
+            LocalDate dataFinal
+    ) {
+
+        LocalDateTime inicio =
+                dataInicial.atStartOfDay();
+
+        LocalDateTime fim =
+                dataFinal.plusDays(1).atStartOfDay();
+
+        List<Venda> vendas =
+                vendaRepository.findByDataVendaBetween(
+                        inicio,
+                        fim
+                );
+
+        BigDecimal faturamento = BigDecimal.ZERO;
+
+        for (Venda venda : vendas) {
+
+            if (venda.getStatusVendasEnums() == StatusVendaEnums.FINALIZADA) {
+                faturamento = faturamento.add(venda.getValorTotal());
+            }
+        }
+
+        return faturamento;
+    }
+
+
+
 
 }
 
