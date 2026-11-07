@@ -1,6 +1,8 @@
-package com.gestaocomercial.relatorio;
+package com.gestaocomercial.relatorio.controller;
 
 
+import com.gestaocomercial.relatorio.dto.out.ProdutoMaisVendidoDTOResponse;
+import com.gestaocomercial.relatorio.service.RelatorioService;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +57,12 @@ public class RelatorioController {
     @GetMapping("/pagamentos")
     public ResponseEntity<BigDecimal> calcularVendasPorFormaPagamento(@RequestParam FormaPagamentoEnums pagamentoEnums){
         return ResponseEntity.ok(relatorioService.calcularVendasPorFormaPagamento(pagamentoEnums));
+    }
+    @GetMapping("/produtos/mais-vendidos")
+    public ResponseEntity<List<ProdutoMaisVendidoDTOResponse>> listarProdutosMaisVendidos() {
+
+        return ResponseEntity.ok(
+                relatorioService.listarProdutosMaisVendidos()
+        );
     }
 }

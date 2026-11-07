@@ -1,8 +1,10 @@
-package com.gestaocomercial.relatorio;
+package com.gestaocomercial.relatorio.service;
 
 
+import com.gestaocomercial.relatorio.dto.out.ProdutoMaisVendidoDTOResponse;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
+import com.gestaocomercial.venda.entity.ItemVenda;
 import com.gestaocomercial.venda.entity.Venda;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
@@ -13,7 +15,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -144,6 +149,53 @@ public class RelatorioService {
         }
 
         return total;
+    }
+
+    public List<ProdutoMaisVendidoDTOResponse> listarProdutosMaisVendidos() {
+
+        List<Venda> vendasFinalizadas =
+                vendaRepository.findByStatusVendasEnums(
+                        StatusVendaEnums.FINALIZADA
+                );
+
+        Map<Long, ProdutoMaisVendidoDTOResponse> produtosAgrupados =
+                new HashMap<>();
+
+        for (Venda venda : vendasFinalizadas) {
+
+            for (ItemVenda item : venda.getItens()) {
+
+                Long produtoId = item.getProduto().getId();
+
+                ProdutoMaisVendidoDTOResponse produto =
+                        produtosAgrupados.get(produtoId);
+
+                if (produto == null) {
+
+                    produto = ProdutoMaisVendidoDTOResponse.builder()
+                            .produtoId(produtoId)
+                            .nomeProduto(item.getProduto().getNome())
+                            .quantidadeVendida(BigDecimal.ZERO)
+                            .build();
+
+                    produtosAgrupados.put(produtoId, produto);
+                }
+
+                produto.setQuantidadeVendida(
+                        produto.getQuantidadeVendida()
+                                .add(item.getQuantidadeItem())
+                );
+            }
+        }
+
+        return produtosAgrupados.values()
+                .stream()
+                .sorted(
+                        Comparator.comparing(
+                                ProdutoMaisVendidoDTOResponse::getQuantidadeVendida
+                        ).reversed()
+                )
+                .toList();
     }
 
 
