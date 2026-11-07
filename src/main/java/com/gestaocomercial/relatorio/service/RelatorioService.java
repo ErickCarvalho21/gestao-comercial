@@ -1,6 +1,8 @@
 package com.gestaocomercial.relatorio.service;
 
 
+import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
+import com.gestaocomercial.produto.service.ProdutoService;
 import com.gestaocomercial.relatorio.dto.out.ProdutoMaisVendidoDTOResponse;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
@@ -26,6 +28,7 @@ public class RelatorioService {
 
     private final VendaRepository vendaRepository;
     private final VendaConverter vendaConverter;
+    private final ProdutoService produtoService;
 
     public List<VendaDTOResponse> listarVendasDoDia() {
 
@@ -196,6 +199,10 @@ public class RelatorioService {
                         ).reversed()
                 )
                 .toList();
+    }
+
+    public List<ProdutoDTOResponse> listarProdutosEstoqueBaixo() {
+        return produtoService.listarProdutoEstoqueBaixo();
     }
 
 
