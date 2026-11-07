@@ -4,6 +4,7 @@ package com.gestaocomercial.relatorio.controller;
 import com.gestaocomercial.estoque.dto.out.MovimentacaoEstoqueDTOResponse;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.relatorio.dto.out.ProdutoMaisVendidoDTOResponse;
+import com.gestaocomercial.relatorio.dto.out.ResumoCaixaDTOResponse;
 import com.gestaocomercial.relatorio.service.RelatorioService;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
@@ -80,5 +81,10 @@ public class RelatorioController {
 
         return ResponseEntity.ok(relatorioService.listarVendasPorFuncionario(usuarioId)
         );
+    }
+    @GetMapping("/caixa/{caixaId}/resumo")
+    public ResponseEntity<ResumoCaixaDTOResponse> gerarResumoCaixa(
+            @PathVariable Long caixaId) {
+        return ResponseEntity.ok(relatorioService.gerarResumoCaixa(caixaId));
     }
 }
