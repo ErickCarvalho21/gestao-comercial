@@ -3,6 +3,7 @@ package com.gestaocomercial.api.converter;
 import com.gestaocomercial.api.request.ProdutoDTORequestFixture;
 import com.gestaocomercial.api.response.ProdutoDTOResponseFixture;
 import com.gestaocomercial.produto.Converter.ProdutoConverter;
+import com.gestaocomercial.produto.dto.in.ProdutoAtualizacaoDTORequest;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.entity.Produto;
@@ -30,6 +31,8 @@ public class ProdutoConverterTest {
     private ProdutoDTORequest produtoDTORequest;
 
     private ProdutoDTOResponse produtoDTOResponse;
+
+    private ProdutoAtualizacaoDTORequest produtoAtualizacaoDTORequest;
 
     private LocalDateTime dataHora;
 
@@ -85,6 +88,7 @@ public class ProdutoConverterTest {
                 true,
                 dataHora
         );
+
     }
 
 
