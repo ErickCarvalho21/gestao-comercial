@@ -2,6 +2,7 @@ package com.gestaocomercial.relatorio;
 
 
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
+import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,5 +50,10 @@ public class RelatorioController {
         return ResponseEntity.ok(
                 relatorioService.calcularFaturamentoPorPeriodo(dataInicial, dataFinal)
         );
+    }
+
+    @GetMapping("/pagamentos")
+    public ResponseEntity<BigDecimal> calcularVendasPorFormaPagamento(@RequestParam FormaPagamentoEnums pagamentoEnums){
+        return ResponseEntity.ok(relatorioService.calcularVendasPorFormaPagamento(pagamentoEnums));
     }
 }

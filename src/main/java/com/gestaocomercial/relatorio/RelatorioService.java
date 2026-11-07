@@ -4,6 +4,7 @@ package com.gestaocomercial.relatorio;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.entity.Venda;
+import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import com.gestaocomercial.venda.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
@@ -114,6 +115,35 @@ public class RelatorioService {
         }
 
         return faturamento;
+    }
+
+    public BigDecimal calcularVendasPorFormaPagamento(
+            FormaPagamentoEnums formaPagamento
+    ) {
+
+        LocalDate hoje = LocalDate.now();
+
+        LocalDateTime inicioDoDia = hoje.atStartOfDay();
+        LocalDateTime inicioDoProximoDia = hoje.plusDays(1).atStartOfDay();
+
+        List<Venda> vendas =
+                vendaRepository.findByDataVendaBetween(
+                        inicioDoDia,
+                        inicioDoProximoDia
+                );
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (Venda venda : vendas) {
+
+            if (venda.getStatusVendasEnums() == StatusVendaEnums.FINALIZADA
+                    && venda.getFormaPagamentosEnums() == formaPagamento) {
+
+                total = total.add(venda.getValorTotal());
+            }
+        }
+
+        return total;
     }
 
 
