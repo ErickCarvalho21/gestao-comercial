@@ -1,6 +1,7 @@
 package com.gestaocomercial.relatorio.controller;
 
 
+import com.gestaocomercial.estoque.dto.out.MovimentacaoEstoqueDTOResponse;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.relatorio.dto.out.ProdutoMaisVendidoDTOResponse;
 import com.gestaocomercial.relatorio.service.RelatorioService;
@@ -71,6 +72,14 @@ public class RelatorioController {
 
         return ResponseEntity.ok(
                 relatorioService.listarProdutosEstoqueBaixo()
+        );
+    }
+
+    @GetMapping("/estoque/historico")
+    public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarHistoricoEstoque() {
+
+        return ResponseEntity.ok(
+                relatorioService.listarHistoricoEstoque()
         );
     }
 }
