@@ -1,6 +1,7 @@
 package com.gestaocomercial.venda.repository;
 
 import com.gestaocomercial.venda.entity.Venda;
+import com.gestaocomercial.venda.enums.StatusVendaEnums;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -16,5 +17,9 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             LocalDateTime inicio,
             LocalDateTime fim
     );
+
+    List<Venda> findByStatusVendasEnums(StatusVendaEnums status);
+
+    List<Venda> findByUsuarioId(Long usuarioId);
 
 }
