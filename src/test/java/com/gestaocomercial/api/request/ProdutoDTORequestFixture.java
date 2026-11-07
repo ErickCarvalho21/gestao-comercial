@@ -5,7 +5,7 @@ import com.gestaocomercial.produto.enums.TipoVendaEnums;
 
 import java.math.BigDecimal;
 
-public class ProdutoRequestDTOFixture {
+public class ProdutoDTORequestFixture {
 
     public static ProdutoDTORequest build(
             String nome,
