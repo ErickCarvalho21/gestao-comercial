@@ -20,4 +20,6 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
 
     List<Venda> findByStatusVendasEnums(StatusVendaEnums status);
 
+    List<Venda> findByUsuarioId(Long usuarioId);
+
 }

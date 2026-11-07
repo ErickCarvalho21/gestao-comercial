@@ -212,6 +212,16 @@ public class RelatorioService {
         return estoqueService.listarMovimentacoes();
     }
 
+    public List<VendaDTOResponse> listarVendasPorFuncionario(Long usuarioId) {
+
+        List<Venda> vendas =
+                vendaRepository.findByUsuarioId(usuarioId);
+
+        return vendas.stream()
+                .map(vendaConverter::paraVendaDTOResponse)
+                .toList();
+    }
+
 
 
 

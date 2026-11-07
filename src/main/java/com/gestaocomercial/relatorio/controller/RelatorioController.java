@@ -9,10 +9,7 @@ import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.enums.FormaPagamentoEnums;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -63,23 +60,25 @@ public class RelatorioController {
     @GetMapping("/produtos/mais-vendidos")
     public ResponseEntity<List<ProdutoMaisVendidoDTOResponse>> listarProdutosMaisVendidos() {
 
-        return ResponseEntity.ok(
-                relatorioService.listarProdutosMaisVendidos()
-        );
+        return ResponseEntity.ok(relatorioService.listarProdutosMaisVendidos());
     }
     @GetMapping("/produtos/estoque-baixo")
     public ResponseEntity<List<ProdutoDTOResponse>> listarProdutosEstoqueBaixo() {
 
         return ResponseEntity.ok(
-                relatorioService.listarProdutosEstoqueBaixo()
-        );
+                relatorioService.listarProdutosEstoqueBaixo());
     }
 
     @GetMapping("/estoque/historico")
     public ResponseEntity<List<MovimentacaoEstoqueDTOResponse>> listarHistoricoEstoque() {
 
-        return ResponseEntity.ok(
-                relatorioService.listarHistoricoEstoque()
+        return ResponseEntity.ok(relatorioService.listarHistoricoEstoque());
+    }
+
+    @GetMapping("/vendas/funcionario/{usuarioId}")
+    public ResponseEntity<List<VendaDTOResponse>> listarVendasPorFuncionario(@PathVariable Long usuarioId) {
+
+        return ResponseEntity.ok(relatorioService.listarVendasPorFuncionario(usuarioId)
         );
     }
 }
