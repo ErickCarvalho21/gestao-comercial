@@ -185,6 +185,14 @@ public class CaixaService {
                 .toList();
     }
 
+    public Caixa buscarCaixaEntidadePorId(Long caixaId) {
+
+        return caixaRepository.findById(caixaId)
+                .orElseThrow(() -> new CaixaNaoEncontradoException(
+                        "Caixa não encontrado: " + caixaId
+                ));
+    }
+
 
 
 

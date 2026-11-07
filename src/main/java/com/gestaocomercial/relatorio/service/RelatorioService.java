@@ -1,11 +1,15 @@
 package com.gestaocomercial.relatorio.service;
 
 
+import com.gestaocomercial.caixa.entity.Caixa;
+import com.gestaocomercial.caixa.service.CaixaService;
 import com.gestaocomercial.estoque.dto.out.MovimentacaoEstoqueDTOResponse;
 import com.gestaocomercial.estoque.service.EstoqueService;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.service.ProdutoService;
+import com.gestaocomercial.relatorio.converter.RelatorioConverter;
 import com.gestaocomercial.relatorio.dto.out.ProdutoMaisVendidoDTOResponse;
+import com.gestaocomercial.relatorio.dto.out.ResumoCaixaDTOResponse;
 import com.gestaocomercial.venda.converter.VendaConverter;
 import com.gestaocomercial.venda.dto.out.VendaDTOResponse;
 import com.gestaocomercial.venda.entity.ItemVenda;
@@ -32,6 +36,8 @@ public class RelatorioService {
     private final VendaConverter vendaConverter;
     private final ProdutoService produtoService;
     private final EstoqueService estoqueService;
+    private final CaixaService caixaService;
+    private final RelatorioConverter relatorioConverter;
 
     public List<VendaDTOResponse> listarVendasDoDia() {
 
@@ -220,6 +226,14 @@ public class RelatorioService {
         return vendas.stream()
                 .map(vendaConverter::paraVendaDTOResponse)
                 .toList();
+    }
+
+    public ResumoCaixaDTOResponse gerarResumoCaixa(Long caixaId) {
+
+        Caixa caixa =
+                caixaService.buscarCaixaEntidadePorId(caixaId);
+
+        return relatorioConverter.paraResumoCaixaDTO(caixa);
     }
 
 
