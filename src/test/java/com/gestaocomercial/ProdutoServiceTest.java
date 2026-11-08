@@ -2,6 +2,7 @@ package com.gestaocomercial;
 
 import com.gestaocomercial.api.request.ProdutoDTORequestFixture;
 import com.gestaocomercial.api.response.ProdutoDTOResponseFixture;
+import com.gestaocomercial.exception.CodigoBarrasDuplicationException;
 import com.gestaocomercial.produto.Converter.ProdutoConverter;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
@@ -15,14 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProdutoServiceTest {
@@ -109,4 +108,54 @@ public class ProdutoServiceTest {
         verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
     }
 
+    @Test
+    void deveGerarExcecaoCasoCodigoBarrasJaExista() {
+        when(produtoRepository.existsByCodigoBarras(
+                produtoDTORequest.getCodigoBarras()
+        )).thenReturn(true);
+
+        CodigoBarrasDuplicationException e = assertThrows(
+                CodigoBarrasDuplicationException.class,
+                () -> produtoService.cadastrarProduto(produtoDTORequest)
+        );
+
+        assertEquals(
+                "Este Codigo de Barras ja esta cadrastado",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).existsByCodigoBarras(
+                produtoDTORequest.getCodigoBarras()
+        );
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoGravarProduto() {
+        when(produtoRepository.existsByCodigoBarras(
+                produtoDTORequest.getCodigoBarras()
+        )).thenReturn(false);
+
+        when(produtoConverter.paraProduto(produtoDTORequest))
+                .thenReturn(produtoEntity);
+
+        when(produtoRepository.save(produtoEntity))
+                .thenThrow(new RuntimeException(
+                        "Falha ao gravar dados do produto"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.cadastrarProduto(produtoDTORequest)
+        );
+
+        assertEquals("Falha ao gravar dados do produto", e.getMessage());
+
+        verify(produtoRepository).existsByCodigoBarras(
+                produtoDTORequest.getCodigoBarras()
+        );
+        verify(produtoConverter).paraProduto(produtoDTORequest);
+        verify(produtoRepository).save(produtoEntity);
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
 }
