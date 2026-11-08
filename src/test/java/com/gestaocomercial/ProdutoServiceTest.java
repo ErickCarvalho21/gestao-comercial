@@ -38,8 +38,14 @@ public class ProdutoServiceTest {
     private ProdutoConverter produtoConverter;
 
     private ProdutoDTORequest produtoDTORequest;
+
     private Produto produtoEntity;
+
     private ProdutoDTOResponse produtoDTOResponse;
+
+    private String codigoBarras;
+
+    private Long id;
 
     @BeforeEach
     void setup() {
@@ -80,6 +86,9 @@ public class ProdutoServiceTest {
                 true,
                 dataHora
         );
+
+        codigoBarras = "7891234567890";
+        id = 1L;
     }
 
     @Test
@@ -163,8 +172,6 @@ public class ProdutoServiceTest {
 
     @Test
     void deveBuscarProdutoPorIdComSucesso() {
-        Long id = 1L;
-
         when(produtoRepository.findById(id))
                 .thenReturn(Optional.of(produtoEntity));
 
@@ -180,7 +187,6 @@ public class ProdutoServiceTest {
     }
     @Test
     void deveGerarExcecaoCasoProdutoNaoSejaEncontradoPorId() {
-        Long id = 1L;
 
         when(produtoRepository.findById(id))
                 .thenReturn(Optional.empty());
@@ -198,7 +204,6 @@ public class ProdutoServiceTest {
     }
     @Test
     void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoPorId() {
-        Long id = 1L;
 
         when(produtoRepository.findById(id))
                 .thenThrow(new RuntimeException(
@@ -216,4 +221,64 @@ public class ProdutoServiceTest {
         verifyNoInteractions(produtoConverter);
         verifyNoMoreInteractions(produtoRepository);
     }
+    @Test
+    void deveBuscarProdutoPorCodigoBarrasComSucesso() {
+
+        when(produtoRepository.findByCodigoBarras(codigoBarras))
+                .thenReturn(Optional.of(produtoEntity));
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        ProdutoDTOResponse dto =
+                produtoService.buscarProdutoCodigoBarra(codigoBarras);
+
+        verify(produtoRepository).findByCodigoBarras(codigoBarras);
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+
+        assertEquals(produtoDTOResponse, dto);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoCodigoBarrasNaoSejaEncontrado() {
+
+        when(produtoRepository.findByCodigoBarras(codigoBarras))
+                .thenReturn(Optional.empty());
+
+        ProdutoNaoEncontradoException e = assertThrows(
+                ProdutoNaoEncontradoException.class,
+                () -> produtoService.buscarProdutoCodigoBarra(codigoBarras)
+        );
+
+        assertEquals(
+                " Produto nao encontrado: " + codigoBarras,
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findByCodigoBarras(codigoBarras);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoPorCodigoBarras() {
+        when(produtoRepository.findByCodigoBarras(codigoBarras))
+                .thenThrow(new RuntimeException(
+                        "Falha ao buscar produto por codigo de barras"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.buscarProdutoCodigoBarra(codigoBarras)
+        );
+
+        assertEquals(
+                "Falha ao buscar produto por codigo de barras",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findByCodigoBarras(codigoBarras);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
 }
