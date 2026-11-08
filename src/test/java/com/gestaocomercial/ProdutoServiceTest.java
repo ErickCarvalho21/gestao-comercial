@@ -3,6 +3,7 @@ package com.gestaocomercial;
 import com.gestaocomercial.api.request.ProdutoDTORequestFixture;
 import com.gestaocomercial.api.response.ProdutoDTOResponseFixture;
 import com.gestaocomercial.exception.CodigoBarrasDuplicationException;
+import com.gestaocomercial.exception.ProdutoNaoEncontradoException;
 import com.gestaocomercial.produto.Converter.ProdutoConverter;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -157,5 +159,61 @@ public class ProdutoServiceTest {
         verify(produtoConverter).paraProduto(produtoDTORequest);
         verify(produtoRepository).save(produtoEntity);
         verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveBuscarProdutoPorIdComSucesso() {
+        Long id = 1L;
+
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.of(produtoEntity));
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        ProdutoDTOResponse dto = produtoService.buscarProdutoPorId(id);
+
+        verify(produtoRepository).findById(id);
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+
+        assertEquals(produtoDTOResponse, dto);
+    }
+    @Test
+    void deveGerarExcecaoCasoProdutoNaoSejaEncontradoPorId() {
+        Long id = 1L;
+
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        ProdutoNaoEncontradoException e = assertThrows(
+                ProdutoNaoEncontradoException.class,
+                () -> produtoService.buscarProdutoPorId(id)
+        );
+
+        assertEquals("Produto não Encontrado: " + id, e.getMessage());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoPorId() {
+        Long id = 1L;
+
+        when(produtoRepository.findById(id))
+                .thenThrow(new RuntimeException(
+                        "Falha ao buscar dados do produto"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.buscarProdutoPorId(id)
+        );
+
+        assertEquals("Falha ao buscar dados do produto", e.getMessage());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
     }
 }
