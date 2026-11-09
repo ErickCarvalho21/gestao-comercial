@@ -306,6 +306,66 @@ public class ProdutoServiceTest {
         verifyNoInteractions(produtoConverter);
         verifyNoMoreInteractions(produtoRepository);
     }
+    @Test
+    void deveBuscarProdutoEntidadePorCodigoBarrasComSucesso() {
+        when(produtoRepository.findByCodigoBarras(codigoBarras))
+                .thenReturn(Optional.of(produtoEntity));
+
+        Produto entity =
+                produtoService.buscaProdutoEntidadeCodigoBarras(codigoBarras);
+
+        verify(produtoRepository).findByCodigoBarras(codigoBarras);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+
+        assertEquals(produtoEntity, entity);
+    }
+
+    @Test
+    void deveGerarExcecaoQuandoProdutoEntidadeNaoForEncontradoPorCodigoBarras() {
+        when(produtoRepository.findByCodigoBarras(codigoBarras))
+                .thenReturn(Optional.empty());
+
+        ProdutoNaoEncontradoException e = assertThrows(
+                ProdutoNaoEncontradoException.class,
+                () -> produtoService.buscaProdutoEntidadeCodigoBarras(
+                        codigoBarras
+                )
+        );
+
+        assertEquals(
+                "produto não encontrado:  " + codigoBarras,
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findByCodigoBarras(codigoBarras);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoEntidadePorCodigoBarras() {
+        when(produtoRepository.findByCodigoBarras(codigoBarras))
+                .thenThrow(new RuntimeException(
+                        "Falha ao buscar entidade do produto"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.buscaProdutoEntidadeCodigoBarras(
+                        codigoBarras
+                )
+        );
+
+        assertEquals(
+                "Falha ao buscar entidade do produto",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findByCodigoBarras(codigoBarras);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
 
     @Test
     void deveAtualizarProdutoComSucessoMantendoCodigoBarras() {
@@ -786,7 +846,6 @@ public class ProdutoServiceTest {
         verifyNoInteractions(produtoConverter);
         verifyNoMoreInteractions(produtoRepository);
     }
-
 
 
 }
