@@ -1,10 +1,12 @@
 package com.gestaocomercial;
 
+import com.gestaocomercial.api.request.ProdutoAtualizacaoDTORequestFixture;
 import com.gestaocomercial.api.request.ProdutoDTORequestFixture;
 import com.gestaocomercial.api.response.ProdutoDTOResponseFixture;
 import com.gestaocomercial.exception.CodigoBarrasDuplicationException;
 import com.gestaocomercial.exception.ProdutoNaoEncontradoException;
 import com.gestaocomercial.produto.Converter.ProdutoConverter;
+import com.gestaocomercial.produto.dto.in.ProdutoAtualizacaoDTORequest;
 import com.gestaocomercial.produto.dto.in.ProdutoDTORequest;
 import com.gestaocomercial.produto.dto.out.ProdutoDTOResponse;
 import com.gestaocomercial.produto.entity.Produto;
@@ -43,9 +45,13 @@ public class ProdutoServiceTest {
 
     private ProdutoDTOResponse produtoDTOResponse;
 
+    private ProdutoAtualizacaoDTORequest produtoAtualizacaoDTORequest;
+
     private String codigoBarras;
 
     private Long id;
+
+    private String novoCodigoBarras;
 
     @BeforeEach
     void setup() {
@@ -86,9 +92,19 @@ public class ProdutoServiceTest {
                 true,
                 dataHora
         );
+        produtoAtualizacaoDTORequest = ProdutoAtualizacaoDTORequestFixture.build(
+                "Arroz",
+                codigoBarras,
+                "Pacote de arroz de 1 kg",
+                TipoVendaEnums.UNIDADE,
+                new BigDecimal("4.00"),
+                new BigDecimal("6.00"),
+                new BigDecimal("5")
+        );
 
         codigoBarras = "7891234567890";
         id = 1L;
+        novoCodigoBarras = "7899876543210";
     }
 
     @Test
@@ -279,6 +295,192 @@ public class ProdutoServiceTest {
         verify(produtoRepository).findByCodigoBarras(codigoBarras);
         verifyNoInteractions(produtoConverter);
         verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveAtualizarProdutoComSucessoMantendoCodigoBarras() {
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.of(produtoEntity));
+
+        when(produtoRepository.save(produtoEntity))
+                .thenReturn(produtoEntity);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        ProdutoDTOResponse dto = produtoService.atualizarProduto(
+                id,
+                produtoAtualizacaoDTORequest
+        );
+
+        assertEquals(produtoDTOResponse, dto);
+
+        verify(produtoRepository).findById(id);
+
+        verify(produtoConverter).updateProduto(
+                produtoAtualizacaoDTORequest,
+                produtoEntity
+        );
+
+        verify(produtoRepository).save(produtoEntity);
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveAtualizarProdutoComNovoCodigoBarrasDisponivel() {
+        produtoAtualizacaoDTORequest.setCodigoBarras(novoCodigoBarras);
+        produtoDTOResponse.setCodigoBarras(novoCodigoBarras);
+
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.of(produtoEntity));
+
+        when(produtoRepository.existsByCodigoBarrasAndIdNot(
+                novoCodigoBarras,
+                id
+        )).thenReturn(false);
+
+        when(produtoRepository.save(produtoEntity))
+                .thenReturn(produtoEntity);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        ProdutoDTOResponse dto = produtoService.atualizarProduto(
+                id,
+                produtoAtualizacaoDTORequest
+        );
+
+        assertEquals(produtoDTOResponse, dto);
+
+        verify(produtoRepository).findById(id);
+
+        verify(produtoRepository).existsByCodigoBarrasAndIdNot(
+                novoCodigoBarras,
+                id
+        );
+
+        verify(produtoConverter).updateProduto(
+                produtoAtualizacaoDTORequest,
+                produtoEntity
+        );
+
+        verify(produtoRepository).save(produtoEntity);
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+    @Test
+    void deveGerarExcecaoAoAtualizarComCodigoBarrasDuplicado() {
+        produtoAtualizacaoDTORequest.setCodigoBarras(novoCodigoBarras);
+
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.of(produtoEntity));
+
+        when(produtoRepository.existsByCodigoBarrasAndIdNot(
+                novoCodigoBarras,
+                id
+        )).thenReturn(true);
+
+        CodigoBarrasDuplicationException e = assertThrows(
+                CodigoBarrasDuplicationException.class,
+                () -> produtoService.atualizarProduto(
+                        id,
+                        produtoAtualizacaoDTORequest
+                )
+        );
+
+        assertEquals("Este codigo de barras ja existe", e.getMessage());
+
+        verify(produtoRepository).findById(id);
+
+        verify(produtoRepository).existsByCodigoBarrasAndIdNot(
+                novoCodigoBarras,
+                id
+        );
+
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoAoAtualizarProdutoNaoEncontrado() {
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        ProdutoNaoEncontradoException e = assertThrows(
+                ProdutoNaoEncontradoException.class,
+                () -> produtoService.atualizarProduto(
+                        id,
+                        produtoAtualizacaoDTORequest
+                )
+        );
+
+        assertEquals("Produto não Encontrado: " + id, e.getMessage());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoParaAtualizacao() {
+        when(produtoRepository.findById(id))
+                .thenThrow(new RuntimeException(
+                        "Falha ao buscar produto para atualizacao"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.atualizarProduto(
+                        id,
+                        produtoAtualizacaoDTORequest
+                )
+        );
+
+        assertEquals(
+                "Falha ao buscar produto para atualizacao",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoSalvarAtualizacao() {
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.of(produtoEntity));
+
+        when(produtoRepository.save(produtoEntity))
+                .thenThrow(new RuntimeException(
+                        "Falha ao salvar atualizacao do produto"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.atualizarProduto(
+                        id,
+                        produtoAtualizacaoDTORequest
+                )
+        );
+
+        assertEquals(
+                "Falha ao salvar atualizacao do produto",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findById(id);
+
+        verify(produtoConverter).updateProduto(
+                produtoAtualizacaoDTORequest,
+                produtoEntity
+        );
+
+        verify(produtoRepository).save(produtoEntity);
+
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
     }
 
 }
