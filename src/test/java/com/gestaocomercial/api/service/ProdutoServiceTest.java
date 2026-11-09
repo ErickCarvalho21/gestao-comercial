@@ -651,4 +651,90 @@ public class ProdutoServiceTest {
         verifyNoMoreInteractions(produtoRepository);
     }
 
+    @Test
+    void deveListarTodosOsProdutosQuandoNomeForNulo() {
+        when(produtoRepository.findAll()).thenReturn(produtos);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutos(null);
+
+        assertEquals(produtosDTOResponse, dtos);
+
+        verify(produtoRepository).findAll();
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveListarTodosOsProdutosQuandoNomeForVazio() {
+        when(produtoRepository.findAll()).thenReturn(produtos);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutos("");
+
+        assertEquals(produtosDTOResponse, dtos);
+
+        verify(produtoRepository).findAll();
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveListarTodosOsProdutosQuandoNomeContiverApenasEspacos() {
+        when(produtoRepository.findAll()).thenReturn(produtos);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutos("   ");
+
+        assertEquals(produtosDTOResponse, dtos);
+
+        verify(produtoRepository).findAll();
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoNaoExistiremProdutos() {
+        when(produtoRepository.findAll()).thenReturn(List.of());
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutos(null);
+
+        assertTrue(dtos.isEmpty());
+
+        verify(produtoRepository).findAll();
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoListarTodosOsProdutos() {
+        when(produtoRepository.findAll())
+                .thenThrow(new RuntimeException(
+                        "Falha ao listar produtos"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.listarProdutos(null)
+        );
+
+        assertEquals("Falha ao listar produtos", e.getMessage());
+
+        verify(produtoRepository).findAll();
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+
+
 }
