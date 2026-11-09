@@ -62,6 +62,11 @@ public class ProdutoServiceTest {
 
     @BeforeEach
     void setup() {
+        codigoBarras = "7891234567890";
+        id = 1L;
+        novoCodigoBarras = "7899876543210";
+        nome = "Arroz";
+
         LocalDateTime dataHora =
                 LocalDateTime.of(2023, 10, 5, 14, 15);
 
@@ -108,13 +113,10 @@ public class ProdutoServiceTest {
                 new BigDecimal("6.00"),
                 new BigDecimal("5")
         );
-
-        codigoBarras = "7891234567890";
-        id = 1L;
-        novoCodigoBarras = "7899876543210";
-        nome = "Arroz";
         produtos = List.of(produtoEntity);
         produtosDTOResponse = List.of(produtoDTOResponse);
+
+
     }
 
     @Test
