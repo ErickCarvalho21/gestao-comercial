@@ -1,4 +1,4 @@
-package com.gestaocomercial;
+package com.gestaocomercial.api.service;
 
 import com.gestaocomercial.api.request.ProdutoAtualizacaoDTORequestFixture;
 import com.gestaocomercial.api.request.ProdutoDTORequestFixture;
@@ -481,6 +481,110 @@ public class ProdutoServiceTest {
         verify(produtoRepository).save(produtoEntity);
 
         verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveDesativarProdutoComSucesso() {
+        produtoEntity.setAtivo(true);
+
+        when(produtoRepository.findById(id)).thenReturn(Optional.of(produtoEntity));
+
+        produtoService.desativarProduto(id);
+
+        assertFalse(produtoEntity.isAtivo());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoAoDesativarProdutoNaoEncontrado() {
+        when(produtoRepository.findById(id)).thenReturn(Optional.empty());
+
+        ProdutoNaoEncontradoException e = assertThrows(
+                ProdutoNaoEncontradoException.class,
+                () -> produtoService.desativarProduto(id)
+        );
+
+        assertEquals("Produto não Encontrado: " + id, e.getMessage());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoParaDesativacao() {
+        when(produtoRepository.findById(id))
+                .thenThrow(new RuntimeException(
+                        "Falha ao buscar produto para desativacao"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.desativarProduto(id)
+        );
+
+        assertEquals(
+                "Falha ao buscar produto para desativacao",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveAtivarProdutoComSucesso() {
+        produtoEntity.setAtivo(false);
+
+        when(produtoRepository.findById(id)).thenReturn(Optional.of(produtoEntity));
+
+        produtoService.ativarProduto(id);
+
+        assertTrue(produtoEntity.isAtivo());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoAoAtivarProdutoNaoEncontrado() {
+        when(produtoRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        ProdutoNaoEncontradoException e = assertThrows(
+                ProdutoNaoEncontradoException.class,
+                () -> produtoService.ativarProduto(id)
+        );
+
+        assertEquals("Produto não Encontrado: " + id, e.getMessage());
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoBuscarProdutoParaAtivacao() {
+        when(produtoRepository.findById(id))
+                .thenThrow(new RuntimeException(
+                        "Falha ao buscar produto para ativacao"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.ativarProduto(id)
+        );
+
+        assertEquals(
+                "Falha ao buscar produto para ativacao",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
     }
 
 }
