@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,6 +53,12 @@ public class ProdutoServiceTest {
     private Long id;
 
     private String novoCodigoBarras;
+
+    private String nome;
+
+    private List<Produto> produtos;
+
+    private List<ProdutoDTOResponse> produtosDTOResponse;
 
     @BeforeEach
     void setup() {
@@ -105,6 +112,9 @@ public class ProdutoServiceTest {
         codigoBarras = "7891234567890";
         id = 1L;
         novoCodigoBarras = "7899876543210";
+        nome = "Arroz";
+        produtos = List.of(produtoEntity);
+        produtosDTOResponse = List.of(produtoDTOResponse);
     }
 
     @Test
@@ -583,6 +593,60 @@ public class ProdutoServiceTest {
         );
 
         verify(produtoRepository).findById(id);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+    @Test
+    void deveListarProdutosComEstoqueBaixo() {
+        when(produtoRepository.buscarProdutoEstoqueBaixo())
+                .thenReturn(produtos);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutoEstoqueBaixo();
+
+        assertEquals(produtosDTOResponse, dtos);
+
+        verify(produtoRepository).buscarProdutoEstoqueBaixo();
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoNaoExistiremProdutosComEstoqueBaixo() {
+        when(produtoRepository.buscarProdutoEstoqueBaixo())
+                .thenReturn(List.of());
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutoEstoqueBaixo();
+
+        assertTrue(dtos.isEmpty());
+
+        verify(produtoRepository).buscarProdutoEstoqueBaixo();
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoListarProdutosComEstoqueBaixo() {
+        when(produtoRepository.buscarProdutoEstoqueBaixo())
+                .thenThrow(new RuntimeException(
+                        "Falha ao listar produtos com estoque baixo"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.listarProdutoEstoqueBaixo()
+        );
+
+        assertEquals(
+                "Falha ao listar produtos com estoque baixo",
+                e.getMessage()
+        );
+
+        verify(produtoRepository).buscarProdutoEstoqueBaixo();
         verifyNoInteractions(produtoConverter);
         verifyNoMoreInteractions(produtoRepository);
     }
