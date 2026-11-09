@@ -735,6 +735,58 @@ public class ProdutoServiceTest {
         verifyNoMoreInteractions(produtoRepository);
     }
 
+    @Test
+    void deveListarProdutosFiltrandoPorNome() {
+        when(produtoRepository.findByNomeContainingIgnoreCase(nome))
+                .thenReturn(produtos);
+
+        when(produtoConverter.paraProdutoDTOResponse(produtoEntity))
+                .thenReturn(produtoDTOResponse);
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutos(nome);
+
+        assertEquals(produtosDTOResponse, dtos);
+
+        verify(produtoRepository).findByNomeContainingIgnoreCase(nome);
+        verify(produtoConverter).paraProdutoDTOResponse(produtoEntity);
+        verifyNoMoreInteractions(produtoRepository, produtoConverter);
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoNaoEncontrarProdutosPeloNome() {
+        when(produtoRepository.findByNomeContainingIgnoreCase(nome))
+                .thenReturn(List.of());
+
+        List<ProdutoDTOResponse> dtos =
+                produtoService.listarProdutos(nome);
+
+        assertTrue(dtos.isEmpty());
+
+        verify(produtoRepository).findByNomeContainingIgnoreCase(nome);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoListarProdutosPeloNome() {
+        when(produtoRepository.findByNomeContainingIgnoreCase(nome))
+                .thenThrow(new RuntimeException(
+                        "Falha ao listar produtos pelo nome"
+                ));
+
+        RuntimeException e = assertThrows(
+                RuntimeException.class,
+                () -> produtoService.listarProdutos(nome)
+        );
+
+        assertEquals("Falha ao listar produtos pelo nome", e.getMessage());
+
+        verify(produtoRepository).findByNomeContainingIgnoreCase(nome);
+        verifyNoInteractions(produtoConverter);
+        verifyNoMoreInteractions(produtoRepository);
+    }
+
 
 
 }
